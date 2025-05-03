@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { 
   Select,
@@ -27,7 +28,8 @@ const initialLiveServices = [
         <path d="M10 7v5a1 1 0 001 1h2"/>
       </svg>
     ),
-    color: "blue"
+    color: "blue",
+    link: "/bmtc"
   },
   {
     id: 2,
@@ -41,7 +43,8 @@ const initialLiveServices = [
         <path d="M12 3v16"/>
       </svg>
     ),
-    color: "yellow"
+    color: "yellow",
+    link: "/metro"
   },
   {
     id: 3,
@@ -58,7 +61,8 @@ const initialLiveServices = [
         <path d="M16 17v3"/>
       </svg>
     ),
-    color: "red"
+    color: "red",
+    link: "/ksrtc"
   },
   {
     id: 4,
@@ -72,7 +76,8 @@ const initialLiveServices = [
         <path d="M5 17h-2v-11a1 1 0 0 1 1 -1h9v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5"/>
       </svg>
     ),
-    color: "green"
+    color: "green",
+    link: "/auto-taxi"
   }
 ];
 
@@ -84,6 +89,7 @@ const routes = {
 };
 
 const LiveStatus = () => {
+  const navigate = useNavigate();
   const [liveServices, setLiveServices] = useState(initialLiveServices);
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
   const [selectedService, setSelectedService] = useState<string | null>(null);
@@ -109,6 +115,11 @@ const LiveStatus = () => {
     setLiveServices(updatedServices);
   };
   
+  const handleServiceClick = (service: any) => {
+    // Navigate to the service portal page
+    navigate(service.link);
+  };
+  
   const getRouteOptions = (serviceName: string) => {
     return routes[serviceName as keyof typeof routes] || [];
   };
@@ -132,7 +143,7 @@ const LiveStatus = () => {
           <div 
             key={service.id}
             className="glassmorphism rounded-lg p-4 hover:bg-white/30 transition-colors cursor-pointer"
-            onClick={() => setSelectedService(service.name)}
+            onClick={() => handleServiceClick(service)}
           >
             <div className="flex items-center gap-3">
               <div className={cn(

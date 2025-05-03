@@ -16,7 +16,7 @@ const BmtcPortal = () => {
   const [destination, setDestination] = useState("");
   const [searchResults, setSearchResults] = useState<BusRoute[] | null>(null);
   
-  const popularRoutes = [
+  const recentRoutes = [
     { id: 1, name: "Majestic to Whitefield", number: "500D", frequency: "10 mins", fare: "₹75" },
     { id: 2, name: "KR Market to HSR Layout", number: "368", frequency: "15 mins", fare: "₹60" },
     { id: 3, name: "Shivajinagar to Electronic City", number: "356CW", frequency: "12 mins", fare: "₹85" },
@@ -133,67 +133,8 @@ const BmtcPortal = () => {
             </TabsList>
             
             <TabsContent value="routes">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Route className="mr-2 h-5 w-5" />
-                    Popular Routes
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {popularRoutes.map((route) => (
-                      <div 
-                        key={route.id}
-                        className={`glassmorphism p-4 rounded-lg cursor-pointer transition-all ${selectedRoute === route.name ? 'ring-2 ring-karnataka-blue' : ''}`}
-                        onClick={() => setSelectedRoute(route.name)}
-                      >
-                        <div className="flex justify-between items-center">
-                          <span className="font-medium">{route.name}</span>
-                          <span className="bg-karnataka-blue text-white px-2 py-1 rounded text-xs">
-                            {route.number}
-                          </span>
-                        </div>
-                        <div className="mt-2 text-sm text-gray-600">
-                          <div className="flex justify-between">
-                            <span>Frequency:</span>
-                            <span>{route.frequency}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Fare:</span>
-                            <span>{route.fare}</span>
-                          </div>
-                        </div>
-                        
-                        {selectedRoute === route.name && (
-                          <div className="mt-3 border-t pt-2">
-                            <p className="text-sm mb-2">Next buses:</p>
-                            <div className="flex gap-2">
-                              <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                                5 mins
-                              </span>
-                              <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                                15 mins
-                              </span>
-                              <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                                25 mins
-                              </span>
-                            </div>
-                            <Button 
-                              size="sm" 
-                              className="w-full mt-2 bg-karnataka-blue"
-                            >
-                              <Navigation className="mr-1 h-4 w-4" />
-                              Track Bus
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="mt-4">
+              {/* Route Finder moved above Recent Routes */}
+              <Card className="mb-4">
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Map className="mr-2 h-5 w-5" />
@@ -275,6 +216,68 @@ const BmtcPortal = () => {
                         </div>
                       </div>
                     )}
+                  </div>
+                </CardContent>
+              </Card>
+              
+              {/* Changed from Popular Routes to Recent Routes */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Route className="mr-2 h-5 w-5" />
+                    Recent Routes
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {recentRoutes.map((route) => (
+                      <div 
+                        key={route.id}
+                        className={`glassmorphism p-4 rounded-lg cursor-pointer transition-all ${selectedRoute === route.name ? 'ring-2 ring-karnataka-blue' : ''}`}
+                        onClick={() => setSelectedRoute(route.name)}
+                      >
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium">{route.name}</span>
+                          <span className="bg-karnataka-blue text-white px-2 py-1 rounded text-xs">
+                            {route.number}
+                          </span>
+                        </div>
+                        <div className="mt-2 text-sm text-gray-600">
+                          <div className="flex justify-between">
+                            <span>Frequency:</span>
+                            <span>{route.frequency}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Fare:</span>
+                            <span>{route.fare}</span>
+                          </div>
+                        </div>
+                        
+                        {selectedRoute === route.name && (
+                          <div className="mt-3 border-t pt-2">
+                            <p className="text-sm mb-2">Next buses:</p>
+                            <div className="flex gap-2">
+                              <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                                5 mins
+                              </span>
+                              <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                                15 mins
+                              </span>
+                              <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                                25 mins
+                              </span>
+                            </div>
+                            <Button 
+                              size="sm" 
+                              className="w-full mt-2 bg-karnataka-blue"
+                            >
+                              <Navigation className="mr-1 h-4 w-4" />
+                              Track Bus
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>

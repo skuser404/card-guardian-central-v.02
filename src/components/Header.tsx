@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { Language } from 'lucide-react';
+import { Globe } from 'lucide-react';
 
 const Header = () => {
   const [isKannada, setIsKannada] = useState(false);
@@ -52,7 +52,7 @@ const Header = () => {
             isKannada ? "bg-karnataka-yellow text-karnataka-blue" : "bg-karnataka-blue text-white"
           )}
         >
-          <Language className="mr-1 h-4 w-4" />
+          <Globe className="mr-1 h-4 w-4" />
           <span className={cn(
             "inline-block transition-all duration-300",
             isKannada ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"

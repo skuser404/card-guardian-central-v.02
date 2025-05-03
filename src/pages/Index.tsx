@@ -1,11 +1,51 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useState, useEffect } from "react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import TransportCard from "@/components/TransportCard";
+import ParticleBackground from "@/components/ParticleBackground";
+import EmergencyButton from "@/components/EmergencyButton";
+import LiveStatus from "@/components/LiveStatus";
 
 const Index = () => {
+  const [cardStatus, setCardStatus] = useState<"active" | "locked">("active");
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="min-h-screen relative overflow-x-hidden">
+      {/* Particle Background */}
+      <ParticleBackground />
+      
+      {/* Main Content */}
+      <div className="container max-w-3xl mx-auto px-4 py-6">
+        <Header />
+        
+        <main className="my-6">
+          <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center text-karnataka-blue">
+            Karnataka Universal Transport Card
+          </h1>
+          
+          <div className="grid grid-cols-1 gap-6">
+            {/* Transport Card Section */}
+            <section>
+              <h2 className="text-xl font-semibold mb-4">Your Universal Transport Card</h2>
+              <TransportCard initialStatus={cardStatus} />
+            </section>
+            
+            {/* Live Status Section */}
+            <section>
+              <h2 className="text-xl font-semibold mb-4">Live Transport Status</h2>
+              <LiveStatus />
+            </section>
+            
+            {/* Emergency Section */}
+            <section>
+              <h2 className="text-xl font-semibold mb-4">Emergency Assistance</h2>
+              <EmergencyButton />
+            </section>
+          </div>
+        </main>
+        
+        <Footer />
       </div>
     </div>
   );

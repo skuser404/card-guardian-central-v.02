@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,16 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Karnataka transport colors
+				karnataka: {
+					red: '#D22730',
+					blue: '#0C3E8D',
+					yellow: '#FBB917',
+					green: '#006837',
+					lightBlue: '#4D9DE0', 
+					gray: '#58595B'
+				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +94,40 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				pulse: {
+					'0%, 100%': { 
+						opacity: '1',
+						transform: 'scale(1)'
+					},
+					'50%': { 
+						opacity: '0.8',
+						transform: 'scale(1.05)' 
+					}
+				},
+				float: {
+					'0%, 100%': { 
+						transform: 'translateY(0)'
+					},
+					'50%': { 
+						transform: 'translateY(-10px)' 
+					}
+				},
+				shimmer: {
+					'0%': {
+						'background-position': '-200% 0'
+					},
+					'100%': {
+						'background-position': '200% 0'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse': 'pulse 2s infinite ease-in-out',
+				'float': 'float 3s infinite ease-in-out',
+				'shimmer': 'shimmer 2s infinite linear'
 			}
 		}
 	},

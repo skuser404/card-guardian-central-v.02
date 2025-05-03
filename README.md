@@ -1,73 +1,56 @@
-# Welcome to your Lovable project
 
-## Project info
+# Karnataka Universal Transport Card Guardian
 
-**URL**: https://lovable.dev/projects/db8a4ef2-f3c3-466e-838d-79960b677c0d
+A modern, responsive web application for managing Karnataka's Universal Transport Card. This application allows users to view their card status, lock or unlock their card with biometric authentication, view transaction history, and check live transport status.
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+- **Universal Transport Card Management**:
+  - View card details and status (Active/Locked)
+  - Lock and unlock card with biometric authentication
+  - View transaction history
 
-**Use Lovable**
+- **Live Status**:
+  - Check real-time status of KSRTC, BMTC, Metro and Taxi services
+  - View service disruptions and delays
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/db8a4ef2-f3c3-466e-838d-79960b677c0d) and start prompting.
+- **Emergency Assistance**:
+  - Quick access to emergency contact numbers
+  - One-tap emergency assistance
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Modern UI**:
+  - Glassmorphism design elements
+  - Particle background animations
+  - Responsive design for all devices
+  - Language toggle (English/Kannada)
 
-**Use your preferred IDE**
+## Tech Stack
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- React
+- TypeScript
+- Tailwind CSS
+- Framer Motion for animations
+- Shadcn UI components
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Setup and Development
 
-Follow these steps:
+```bash
+# Install dependencies
+npm install
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## API Integration
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+The application is designed to work with the following API endpoints:
 
-**Use GitHub Codespaces**
+- `/api/card/lock` - Locks the transport card
+- `/api/card/unlock` - Unlocks the transport card
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+These endpoints are currently simulated but can be connected to actual backends.
 
-## What technologies are used for this project?
+## License
 
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/db8a4ef2-f3c3-466e-838d-79960b677c0d) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Copyright © 2025 Karnataka State Road Transport Corporation

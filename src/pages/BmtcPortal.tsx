@@ -6,11 +6,15 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { BusFront, Map, Route, Navigation } from "lucide-react";
+import { BusFront, Map, Route, Navigation, CircleDot } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 
 const BmtcPortal = () => {
   const navigate = useNavigate();
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
+  const [startPoint, setStartPoint] = useState("");
+  const [destination, setDestination] = useState("");
+  const [searchResults, setSearchResults] = useState<BusRoute[] | null>(null);
   
   const popularRoutes = [
     { id: 1, name: "Majestic to Whitefield", number: "500D", frequency: "10 mins", fare: "₹75" },
@@ -18,6 +22,87 @@ const BmtcPortal = () => {
     { id: 3, name: "Shivajinagar to Electronic City", number: "356CW", frequency: "12 mins", fare: "₹85" },
     { id: 4, name: "Banashankari to ITPL", number: "501D", frequency: "20 mins", fare: "₹90" }
   ];
+  
+  // Define sample bus routes for demonstration
+  const busRoutes: BusRoute[] = [
+    { id: 1, number: "500D", from: "Majestic", to: "Whitefield", departureTime: "10:15 AM", arrivalTime: "11:30 AM", fare: "₹75", capacity: "overloaded" },
+    { id: 2, number: "500D", from: "Majestic", to: "Whitefield", departureTime: "10:30 AM", arrivalTime: "11:45 AM", fare: "₹75", capacity: "standing" },
+    { id: 3, number: "500D", from: "Majestic", to: "Whitefield", departureTime: "10:45 AM", arrivalTime: "12:00 PM", fare: "₹75", capacity: "available" },
+    { id: 4, number: "368", from: "KR Market", to: "HSR Layout", departureTime: "11:00 AM", arrivalTime: "12:15 PM", fare: "₹60", capacity: "overloaded" },
+    { id: 5, number: "368", from: "KR Market", to: "HSR Layout", departureTime: "11:15 AM", arrivalTime: "12:30 PM", fare: "₹60", capacity: "standing" },
+    { id: 6, number: "356CW", from: "Shivajinagar", to: "Electronic City", departureTime: "11:30 AM", arrivalTime: "12:45 PM", fare: "₹85", capacity: "available" },
+  ];
+  
+  type BusRoute = {
+    id: number;
+    number: string;
+    from: string;
+    to: string;
+    departureTime: string;
+    arrivalTime: string;
+    fare: string;
+    capacity: 'available' | 'standing' | 'overloaded';
+  };
+  
+  const handleFindRoutes = () => {
+    if (!startPoint || !destination) {
+      toast({
+        title: "Please enter both starting point and destination",
+        description: "Both fields are required to search for routes",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Filter routes based on input
+    // In real app, this would be an API call
+    const filteredRoutes = busRoutes.filter(route => {
+      return (
+        route.from.toLowerCase().includes(startPoint.toLowerCase()) ||
+        route.to.toLowerCase().includes(destination.toLowerCase())
+      );
+    });
+    
+    if (filteredRoutes.length === 0) {
+      toast({
+        title: "No routes found",
+        description: "Try different locations or check spelling",
+      });
+      setSearchResults([]);
+    } else {
+      setSearchResults(filteredRoutes);
+      toast({
+        title: "Routes found",
+        description: `Found ${filteredRoutes.length} routes matching your search`,
+      });
+    }
+  };
+  
+  const getCapacityColor = (capacity: string) => {
+    switch (capacity) {
+      case 'overloaded':
+        return "bg-[#ea384c]";
+      case 'standing':
+        return "bg-[#FEF7CD] border border-yellow-400";
+      case 'available':
+        return "bg-[#F2FCE2] border border-green-400";
+      default:
+        return "bg-gray-200";
+    }
+  };
+  
+  const getCapacityText = (capacity: string) => {
+    switch (capacity) {
+      case 'overloaded':
+        return "Overloaded";
+      case 'standing':
+        return "Standing available";
+      case 'available':
+        return "Seats available";
+      default:
+        return "Unknown";
+    }
+  };
   
   return (
     <div className="min-h-screen relative">
@@ -125,14 +210,71 @@ const BmtcPortal = () => {
                         type="text"
                         placeholder="Starting Point"
                         className="border rounded-md p-2 w-full"
+                        value={startPoint}
+                        onChange={(e) => setStartPoint(e.target.value)}
                       />
                       <input
                         type="text"
                         placeholder="Destination"
                         className="border rounded-md p-2 w-full"
+                        value={destination}
+                        onChange={(e) => setDestination(e.target.value)}
                       />
                     </div>
-                    <Button className="w-full mt-4 bg-karnataka-blue">Find Routes</Button>
+                    <Button 
+                      className="w-full mt-4 bg-karnataka-blue"
+                      onClick={handleFindRoutes}
+                    >
+                      Find Routes
+                    </Button>
+                    
+                    {searchResults !== null && (
+                      <div className="mt-6">
+                        <h3 className="text-lg font-medium mb-3">
+                          {searchResults.length > 0 ? 'Available Routes' : 'No routes found'}
+                        </h3>
+                        
+                        <div className="space-y-4">
+                          {searchResults.map((route) => (
+                            <div key={route.id} className="border rounded-lg p-3 bg-white">
+                              <div className="flex justify-between items-center">
+                                <span className="font-medium">{route.from} to {route.to}</span>
+                                <span className="bg-karnataka-blue text-white px-2 py-1 rounded text-xs">
+                                  {route.number}
+                                </span>
+                              </div>
+                              
+                              <div className="mt-2 grid grid-cols-2 gap-2 text-sm">
+                                <div>
+                                  <span className="text-gray-600">Departure:</span> {route.departureTime}
+                                </div>
+                                <div>
+                                  <span className="text-gray-600">Arrival:</span> {route.arrivalTime}
+                                </div>
+                                <div>
+                                  <span className="text-gray-600">Fare:</span> {route.fare}
+                                </div>
+                                <div className="flex items-center">
+                                  <span className="text-gray-600 mr-1">Capacity:</span>
+                                  <span className="flex items-center">
+                                    <CircleDot className={`h-3 w-3 mr-1 ${getCapacityColor(route.capacity)}`} />
+                                    {getCapacityText(route.capacity)}
+                                  </span>
+                                </div>
+                              </div>
+                              
+                              <Button 
+                                variant="outline"
+                                size="sm"
+                                className="w-full mt-2 border-karnataka-blue text-karnataka-blue hover:bg-karnataka-blue/10"
+                              >
+                                Book Ticket
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>

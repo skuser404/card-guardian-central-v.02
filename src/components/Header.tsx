@@ -1,13 +1,23 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
+import { Language } from 'lucide-react';
 
 const Header = () => {
   const [isKannada, setIsKannada] = useState(false);
+  const { toast } = useToast();
 
   const toggleLanguage = () => {
     setIsKannada(!isKannada);
+    
+    // Show toast notification when language changes
+    toast({
+      title: isKannada ? 'Language Changed to English' : 'ಭಾಷೆ ಕನ್ನಡಕ್ಕೆ ಬದಲಾಯಿಸಲಾಗಿದೆ',
+      description: isKannada ? 'The application language is now English' : 'ಅಪ್ಲಿಕೇಶನ್ ಭಾಷೆಯನ್ನು ಈಗ ಕನ್ನಡಕ್ಕೆ ಬದಲಾಯಿಸಲಾಗಿದೆ',
+      duration: 2000
+    });
   };
 
   return (
@@ -24,8 +34,12 @@ const Header = () => {
           />
         </div>
         <div>
-          <h1 className="font-bold text-karnataka-blue text-sm md:text-xl">Karnataka Transport</h1>
-          <p className="text-xs text-karnataka-gray">Unified Services</p>
+          <h1 className="font-bold text-karnataka-blue text-sm md:text-xl">
+            {isKannada ? 'ಕರ್ನಾಟಕ ಸಾರಿಗೆ' : 'Karnataka Transport'}
+          </h1>
+          <p className="text-xs text-karnataka-gray">
+            {isKannada ? 'ಏಕೀಕೃತ ಸೇವೆಗಳು' : 'Unified Services'}
+          </p>
         </div>
       </div>
 
@@ -38,6 +52,7 @@ const Header = () => {
             isKannada ? "bg-karnataka-yellow text-karnataka-blue" : "bg-karnataka-blue text-white"
           )}
         >
+          <Language className="mr-1 h-4 w-4" />
           <span className={cn(
             "inline-block transition-all duration-300",
             isKannada ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"

@@ -32,8 +32,8 @@ const Header = ({ isKannada: propIsKannada, onLanguageChange }: HeaderProps = {}
     
     // Show toast notification when language changes
     toast({
-      title: isKannada ? 'Language Changed to English' : 'ಭಾಷೆ ಕನ್ನಡಕ್ಕೆ ಬದಲಾಯಿಸಲಾಗಿದೆ',
-      description: isKannada ? 'The application language is now English' : 'ಅಪ್ಲಿಕೇಶನ್ ಭಾಷೆಯನ್ನು ಈಗ ಕನ್ನಡಕ್ಕೆ ಬದಲಾಯಿಸಲಾಗಿದೆ',
+      title: newValue ? 'ಭಾಷೆ ಕನ್ನಡಕ್ಕೆ ಬದಲಾಯಿಸಲಾಗಿದೆ' : 'Language Changed to English',
+      description: newValue ? 'ಅಪ್ಲಿಕೇಶನ್ ಭಾಷೆಯನ್ನು ಈಗ ಕನ್ನಡಕ್ಕೆ ಬದಲಾಯಿಸಲಾಗಿದೆ' : 'The application language is now English',
       duration: 2000
     });
   };
@@ -44,7 +44,7 @@ const Header = ({ isKannada: propIsKannada, onLanguageChange }: HeaderProps = {}
         <div className="h-10 w-10 bg-karnataka-blue rounded-full flex items-center justify-center overflow-hidden">
           <img 
             src="/ksrtc_logo.png" 
-            alt="KSRTC Logo" 
+            alt={isKannada ? "ಕೆಎಸ್ಆರ್ಟಿಸಿ ಲೋಗೋ" : "KSRTC Logo"} 
             className="h-12 w-12 object-contain" 
             onError={(e) => {
               e.currentTarget.src = "https://ksrtc.karnataka.gov.in/frontend/KSRTC%20LOGO.png";

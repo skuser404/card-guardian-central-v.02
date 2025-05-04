@@ -1,12 +1,11 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import TransportCard from "@/components/TransportCard";
 import ParticleBackground from "@/components/ParticleBackground";
 import EmergencyButton from "@/components/EmergencyButton";
 import LiveStatus from "@/components/LiveStatus";
-import TransactionHistory from "@/components/TransactionHistory";
 
 const Index = () => {
   const [cardStatus, setCardStatus] = useState<"active" | "locked">("active");
@@ -46,8 +45,6 @@ const Index = () => {
               </h2>
               <TransportCard initialStatus={cardStatus} isKannada={isKannada} />
             </section>
-
-            {/* Transaction History Section - Removed from here as it's included in TransportCard */}
             
             {/* Emergency Section */}
             <section>

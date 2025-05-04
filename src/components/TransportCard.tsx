@@ -104,7 +104,7 @@ const TransportCard = ({
       {/* Card */}
       <div 
         className={cn(
-          "relative w-full rounded-xl p-5 h-52 glassmorphism",
+          "relative w-full rounded-xl p-5 h-auto glassmorphism",
           "card-gradient overflow-hidden transition-all duration-300",
           cardStatus === "locked" ? "grayscale-[30%]" : "grayscale-0",
         )}
@@ -144,7 +144,7 @@ const TransportCard = ({
             <div className="w-10 h-10">
               <img 
                 src="/karnataka_emblem.png"
-                alt="Karnataka Emblem"
+                alt={isKannada ? "ಕರ್ನಾಟಕ ಲಾಂಛನ" : "Karnataka Emblem"}
                 className="w-full h-full object-contain"
                 onError={(e) => {
                   e.currentTarget.src = "https://ksrtc.karnataka.gov.in/frontend/img/StGoK.png";
@@ -158,6 +158,37 @@ const TransportCard = ({
               {isKannada ? "ಕಾರ್ಡ್ ಸಂಖ್ಯೆ" : "Card Number"}
             </div>
             <div className="font-mono tracking-wider">{cardId}</div>
+          </div>
+          
+          {/* Balance Section - Now inside the card */}
+          <div className="py-2 border-t border-white/20 mt-2">
+            <div className="flex justify-between items-center">
+              <div className="text-xs opacity-70">
+                {isKannada ? "ಕಾರ್ಡ್ ಬ್ಯಾಲೆನ್ಸ್" : "Card Balance"}
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => showBalance ? setShowBalance(false) : handleViewBalance()}
+                className="flex items-center gap-1 h-6 p-0 text-white hover:text-white hover:bg-white/20"
+              >
+                {showBalance ? (
+                  <EyeOff size={14} />
+                ) : (
+                  <Eye size={14} />
+                )}
+              </Button>
+            </div>
+            
+            <div className="mt-1">
+              {showBalance ? (
+                <div className="text-xl font-bold">₹{balance.toFixed(2)}</div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <div className="h-5 bg-white/30 rounded-md w-16"></div>
+                </div>
+              )}
+            </div>
           </div>
           
           <div className="flex justify-between items-end">
@@ -190,53 +221,14 @@ const TransportCard = ({
         )}
       </div>
       
-      {/* Balance Section */}
+      {/* Recharge Button (outside of card) */}
       <div className={cn(
         "w-full p-4 rounded-lg glassmorphism transition-all",
         cardStatus === "locked" && "opacity-60 pointer-events-none"
       )}>
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">
-            {isKannada ? "ಕಾರ್ಡ್ ಬ್ಯಾಲೆನ್ಸ್" : "Card Balance"}
-          </h3>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => showBalance ? setShowBalance(false) : handleViewBalance()}
-            className="flex items-center gap-1"
-          >
-            {showBalance ? (
-              <>
-                <EyeOff size={16} />
-                <span className="ml-1">{isKannada ? "ಮರೆಮಾಡಿ" : "Hide"}</span>
-              </>
-            ) : (
-              <>
-                <Eye size={16} />
-                <span className="ml-1">{isKannada ? "ತೋರಿಸಿ" : "Show"}</span>
-              </>
-            )}
-          </Button>
-        </div>
-        
-        <div className="mt-2">
-          {showBalance ? (
-            <div className="text-3xl font-bold">₹{balance.toFixed(2)}</div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <div className="h-6 bg-gray-300 rounded-md w-24"></div>
-              <span className="text-sm text-gray-500">
-                {isKannada ? "ಬ್ಯಾಲೆನ್ಸ್ ವೀಕ್ಷಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ" : "Click to view balance"}
-              </span>
-            </div>
-          )}
-        </div>
-        
-        <div className="mt-3 flex">
-          <Button className="w-full bg-karnataka-blue">
-            {isKannada ? "ಕಾರ್ಡ್ ರೀಚಾರ್ಜ್ ಮಾಡಿ" : "Recharge Card"}
-          </Button>
-        </div>
+        <Button className="w-full bg-karnataka-blue">
+          {isKannada ? "ಕಾರ್ಡ್ ರೀಚಾರ್ಜ್ ಮಾಡಿ" : "Recharge Card"}
+        </Button>
       </div>
       
       {/* Card Actions */}

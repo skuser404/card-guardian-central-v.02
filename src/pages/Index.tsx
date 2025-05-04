@@ -25,16 +25,16 @@ const Index = () => {
           </h1>
           
           <div className="grid grid-cols-1 gap-6">
-            {/* Transport Card Section */}
-            <section>
-              <h2 className="text-xl font-semibold mb-4">Your Universal Transport Card</h2>
-              <TransportCard initialStatus={cardStatus} />
-            </section>
-            
-            {/* Live Status Section */}
+            {/* Live Status Section - Moved to the top */}
             <section>
               <h2 className="text-xl font-semibold mb-4">Live Transport Status</h2>
               <LiveStatus />
+            </section>
+            
+            {/* Transport Card Section - Moved down */}
+            <section>
+              <h2 className="text-xl font-semibold mb-4">Your Universal Transport Card</h2>
+              <TransportCard initialStatus={cardStatus} />
             </section>
             
             {/* Emergency Section */}

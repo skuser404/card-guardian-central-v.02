@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -17,20 +16,20 @@ const BmtcPortal = () => {
   const [searchResults, setSearchResults] = useState<BusRoute[] | null>(null);
   
   const recentRoutes = [
-    { id: 1, name: "Majestic to Whitefield", number: "500D", frequency: "10 mins", fare: "₹75" },
-    { id: 2, name: "KR Market to HSR Layout", number: "368", frequency: "15 mins", fare: "₹60" },
-    { id: 3, name: "Shivajinagar to Electronic City", number: "356CW", frequency: "12 mins", fare: "₹85" },
-    { id: 4, name: "Banashankari to ITPL", number: "501D", frequency: "20 mins", fare: "₹90" }
+    { id: 1, name: "Majestic to Whitefield", number: "500D", frequency: "10 mins", fare: "₹30", isAC: false },
+    { id: 2, name: "KR Market to HSR Layout", number: "368", frequency: "15 mins", fare: "₹25", isAC: false },
+    { id: 3, name: "Shivajinagar to Electronic City", number: "356CW", frequency: "12 mins", fare: "₹50", isAC: true },
+    { id: 4, name: "Banashankari to ITPL", number: "501D", frequency: "20 mins", fare: "₹45", isAC: true }
   ];
   
   // Define sample bus routes for demonstration
   const busRoutes: BusRoute[] = [
-    { id: 1, number: "500D", from: "Majestic", to: "Whitefield", departureTime: "10:15 AM", arrivalTime: "11:30 AM", fare: "₹75", capacity: "overloaded" },
-    { id: 2, number: "500D", from: "Majestic", to: "Whitefield", departureTime: "10:30 AM", arrivalTime: "11:45 AM", fare: "₹75", capacity: "standing" },
-    { id: 3, number: "500D", from: "Majestic", to: "Whitefield", departureTime: "10:45 AM", arrivalTime: "12:00 PM", fare: "₹75", capacity: "available" },
-    { id: 4, number: "368", from: "KR Market", to: "HSR Layout", departureTime: "11:00 AM", arrivalTime: "12:15 PM", fare: "₹60", capacity: "overloaded" },
-    { id: 5, number: "368", from: "KR Market", to: "HSR Layout", departureTime: "11:15 AM", arrivalTime: "12:30 PM", fare: "₹60", capacity: "standing" },
-    { id: 6, number: "356CW", from: "Shivajinagar", to: "Electronic City", departureTime: "11:30 AM", arrivalTime: "12:45 PM", fare: "₹85", capacity: "available" },
+    { id: 1, number: "500D", from: "Majestic", to: "Whitefield", departureTime: "10:15 AM", arrivalTime: "11:30 AM", fare: "₹30", capacity: "overloaded", isAC: false },
+    { id: 2, number: "500D", from: "Majestic", to: "Whitefield", departureTime: "10:30 AM", arrivalTime: "11:45 AM", fare: "₹30", capacity: "standing", isAC: false },
+    { id: 3, number: "500D", from: "Majestic", to: "Whitefield", departureTime: "10:45 AM", arrivalTime: "12:00 PM", fare: "₹30", capacity: "available", isAC: false },
+    { id: 4, number: "368", from: "KR Market", to: "HSR Layout", departureTime: "11:00 AM", arrivalTime: "12:15 PM", fare: "₹25", capacity: "overloaded", isAC: false },
+    { id: 5, number: "368", from: "KR Market", to: "HSR Layout", departureTime: "11:15 AM", arrivalTime: "12:30 PM", fare: "₹25", capacity: "standing", isAC: false },
+    { id: 6, number: "356CW", from: "Shivajinagar", to: "Electronic City", departureTime: "11:30 AM", arrivalTime: "12:45 PM", fare: "₹50", capacity: "available", isAC: true },
   ];
   
   type BusRoute = {
@@ -42,6 +41,7 @@ const BmtcPortal = () => {
     arrivalTime: string;
     fare: string;
     capacity: 'available' | 'standing' | 'overloaded';
+    isAC?: boolean;
   };
   
   const handleFindRoutes = () => {
@@ -180,9 +180,16 @@ const BmtcPortal = () => {
                             <div key={route.id} className="border rounded-lg p-3 bg-white">
                               <div className="flex justify-between items-center">
                                 <span className="font-medium">{route.from} to {route.to}</span>
-                                <span className="bg-karnataka-blue text-white px-2 py-1 rounded text-xs">
-                                  {route.number}
-                                </span>
+                                <div className="flex items-center gap-2">
+                                  {route.isAC && (
+                                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                                      AC
+                                    </span>
+                                  )}
+                                  <span className="bg-karnataka-blue text-white px-2 py-1 rounded text-xs">
+                                    {route.number}
+                                  </span>
+                                </div>
                               </div>
                               
                               <div className="mt-2 grid grid-cols-2 gap-2 text-sm">
@@ -238,9 +245,16 @@ const BmtcPortal = () => {
                       >
                         <div className="flex justify-between items-center">
                           <span className="font-medium">{route.name}</span>
-                          <span className="bg-karnataka-blue text-white px-2 py-1 rounded text-xs">
-                            {route.number}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            {route.isAC && (
+                              <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                                AC
+                              </span>
+                            )}
+                            <span className="bg-karnataka-blue text-white px-2 py-1 rounded text-xs">
+                              {route.number}
+                            </span>
+                          </div>
                         </div>
                         <div className="mt-2 text-sm text-gray-600">
                           <div className="flex justify-between">

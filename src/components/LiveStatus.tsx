@@ -15,8 +15,12 @@ const initialLiveServices = [
   {
     id: 1,
     name: "BMTC",
+    nameKn: "ಬಿಎಂಟಿಸಿ",
     status: "Normal",
+    statusKn: "ಸಾಮಾನ್ಯ",
     details: "All routes operating normally",
+    detailsKn: "ಎಲ್ಲಾ ಮಾರ್ಗಗಳು ಸಾಮಾನ್ಯವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿವೆ",
+    plateNumber: "KA-01-F-1234",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-karnataka-blue">
         <path d="M19 17h2V7l-2 2"/>
@@ -34,8 +38,12 @@ const initialLiveServices = [
   {
     id: 2,
     name: "Metro",
+    nameKn: "ಮೆಟ್ರೋ",
     status: "Minor Delay",
+    statusKn: "ಸಣ್ಣ ವಿಳಂಬ",
     details: "Purple Line: 10 min delay",
+    detailsKn: "ನೇರಳೆ ಮಾರ್ಗ: 10 ನಿಮಿಷ ವಿಳಂಬ",
+    plateNumber: "M-101",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-karnataka-yellow">
         <rect x="4" y="3" width="16" height="16" rx="2"/>
@@ -49,8 +57,12 @@ const initialLiveServices = [
   {
     id: 3,
     name: "KSRTC",
+    nameKn: "ಕೆಎಸ್ಆರ್‌ಟಿಸಿ",
     status: "Normal",
+    statusKn: "ಸಾಮಾನ್ಯ",
     details: "All routes on schedule",
+    detailsKn: "ಎಲ್ಲಾ ಮಾರ್ಗಗಳು ವೇಳಾಪಟ್ಟಿಯಂತೆ",
+    plateNumber: "KA-08-F-5678",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-karnataka-red">
         <path d="M3 9h18V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v4z"/>
@@ -67,8 +79,12 @@ const initialLiveServices = [
   {
     id: 4,
     name: "Auto/Taxi",
+    nameKn: "ಆಟೋ/ಟ್ಯಾಕ್ಸಿ",
     status: "Normal",
+    statusKn: "ಸಾಮಾನ್ಯ",
     details: "Average wait time: 5 mins",
+    detailsKn: "ಸರಾಸರಿ ನಿರೀಕ್ಷೆ ಸಮಯ: 5 ನಿಮಿಷಗಳು",
+    plateNumber: "KA-05-AB-4321",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-karnataka-green">
         <path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/>
@@ -88,7 +104,18 @@ const routes = {
   "Auto/Taxi": ["City Rides", "Airport Transfers", "Outstation Trips", "Package Tours"]
 };
 
-const LiveStatus = () => {
+const routesKannada = {
+  "BMTC": ["ಮೆಜೆಸ್ಟಿಕ್‌ನಿಂದ ವೈಟ್‌ಫೀಲ್ಡ್", "ಕೆ.ಆರ್. ಮಾರ್ಕೆಟ್‌ನಿಂದ ಎಚ್‌ಎಸ್‌ಆರ್ ಲೇಔಟ್", "ಶಿವಾಜಿನಗರದಿಂದ ಎಲೆಕ್ಟ್ರಾನಿಕ್ ಸಿಟಿ", "ಬನಶಂಕರಿಯಿಂದ ಐಟಿಪಿಎಲ್"],
+  "Metro": ["ನೇರಳೆ ಮಾರ್ಗ", "ಹಸಿರು ಮಾರ್ಗ", "ಹಳದಿ ಮಾರ್ಗ (ನಿರ್ಮಾಣದಲ್ಲಿ)", "ಗುಲಾಬಿ ಮಾರ್ಗ (ನಿರ್ಮಾಣದಲ್ಲಿ)"],
+  "KSRTC": ["ಬೆಂಗಳೂರಿನಿಂದ ಮೈಸೂರು", "ಬೆಂಗಳೂರಿನಿಂದ ಮಂಗಳೂರು", "ಬೆಂಗಳೂರಿನಿಂದ ಹುಬ್ಬಳ್ಳಿ", "ಬೆಂಗಳೂರಿನಿಂದ ಬೆಳಗಾವಿ"],
+  "Auto/Taxi": ["ನಗರದ ಪ್ರಯಾಣಗಳು", "ವಿಮಾನ ನಿಲ್ದಾಣ ವರ್ಗಾವಣೆಗಳು", "ಹೊರಗಿನ ಪ್ರಯಾಣಗಳು", "ಪ್ಯಾಕೇಜ್ ಪ್ರವಾಸಗಳು"]
+};
+
+interface LiveStatusProps {
+  isKannada?: boolean;
+}
+
+const LiveStatus = ({ isKannada = false }: LiveStatusProps) => {
   const navigate = useNavigate();
   const [liveServices, setLiveServices] = useState(initialLiveServices);
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
@@ -97,18 +124,33 @@ const LiveStatus = () => {
   const refreshStatus = () => {
     // Simulate updating status with random values
     const statuses = ["Normal", "Minor Delay", "Major Delay"];
+    const statusesKn = ["ಸಾಮಾನ್ಯ", "ಸಣ್ಣ ವಿಳಂಬ", "ಪ್ರಮುಖ ವಿಳಂಬ"];
+    
     const updatedServices = liveServices.map(service => {
       const randomIndex = Math.floor(Math.random() * 3); 
       const newStatus = statuses[randomIndex];
+      const newStatusKn = statusesKn[randomIndex];
+      
+      let details = "";
+      let detailsKn = "";
+      
+      if (newStatus === "Normal") {
+        details = "All routes operating normally";
+        detailsKn = "ಎಲ್ಲಾ ಮಾರ್ಗಗಳು ಸಾಮಾನ್ಯವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿವೆ";
+      } else if (newStatus === "Minor Delay") {
+        details = `${service.name} experiencing 10-15 min delays`;
+        detailsKn = `${service.nameKn} 10-15 ನಿಮಿಷಗಳ ವಿಳಂಬ ಅನುಭವಿಸುತ್ತಿದೆ`;
+      } else {
+        details = `${service.name} experiencing 30+ min delays`;
+        detailsKn = `${service.nameKn} 30+ ನಿಮಿಷಗಳ ವಿಳಂಬ ಅನುಭವಿಸುತ್ತಿದೆ`;
+      }
       
       return {
         ...service,
         status: newStatus,
-        details: newStatus === "Normal" 
-          ? "All routes operating normally" 
-          : newStatus === "Minor Delay" 
-            ? `${service.name} experiencing 10-15 min delays`
-            : `${service.name} experiencing 30+ min delays`
+        statusKn: newStatusKn,
+        details,
+        detailsKn
       };
     });
     
@@ -121,20 +163,25 @@ const LiveStatus = () => {
   };
   
   const getRouteOptions = (serviceName: string) => {
+    if (isKannada) {
+      return routesKannada[serviceName as keyof typeof routesKannada] || [];
+    }
     return routes[serviceName as keyof typeof routes] || [];
   };
   
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-karnataka-blue">Service Updates</h3>
+        <h3 className="text-sm font-medium text-karnataka-blue">
+          {isKannada ? "ಸೇವೆ ಮಾಹಿತಿಗಳು" : "Service Updates"}
+        </h3>
         <Button 
           variant="outline" 
           size="sm" 
           onClick={refreshStatus}
           className="text-xs hover:bg-karnataka-blue/10"
         >
-          Refresh Status
+          {isKannada ? "ಸ್ಥಿತಿ ರಿಫ್ರೆಶ್ ಮಾಡಿ" : "Refresh Status"}
         </Button>
       </div>
       
@@ -157,17 +204,32 @@ const LiveStatus = () => {
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <p className="font-medium">{service.name}</p>
+                  <p className="font-medium">
+                    {isKannada ? service.nameKn : service.name}
+                  </p>
                   <div className={cn(
-                    "px-2 py-1 rounded-full text-xs",
+                    "px-2 py-1 rounded-full text-xs flex items-center",
                     service.status === "Normal" && "bg-green-100 text-green-800",
                     service.status === "Minor Delay" && "bg-yellow-100 text-yellow-800",
                     service.status === "Major Delay" && "bg-red-100 text-red-800"
                   )}>
-                    {service.status}
+                    {/* Enhanced status indicator with larger dot */}
+                    <span className={cn(
+                      "inline-block w-3 h-3 rounded-full mr-1",
+                      service.status === "Normal" && "bg-green-500",
+                      service.status === "Minor Delay" && "bg-yellow-500",
+                      service.status === "Major Delay" && "bg-red-500"
+                    )}></span>
+                    {isKannada ? service.statusKn : service.status}
                   </div>
                 </div>
-                <p className="text-xs text-gray-500">{service.details}</p>
+                <p className="text-xs text-gray-500">
+                  {isKannada ? service.detailsKn : service.details}
+                </p>
+                <p className="text-xs font-medium mt-1">
+                  {isKannada ? "ವಾಹನ ಸಂಖ್ಯೆ: " : "Bus No: "} 
+                  <span className="text-karnataka-blue">{service.plateNumber}</span>
+                </p>
               </div>
             </div>
             
@@ -175,7 +237,7 @@ const LiveStatus = () => {
               <div className="mt-3 pt-3 border-t border-gray-200">
                 <Select onValueChange={setSelectedRoute}>
                   <SelectTrigger className="w-full text-sm">
-                    <SelectValue placeholder="Select a route" />
+                    <SelectValue placeholder={isKannada ? "ಮಾರ್ಗವನ್ನು ಆಯ್ಕೆಮಾಡಿ" : "Select a route"} />
                   </SelectTrigger>
                   <SelectContent>
                     {getRouteOptions(service.name).map((route) => (
@@ -186,10 +248,12 @@ const LiveStatus = () => {
                 
                 {selectedRoute && (
                   <div className="mt-2 p-2 bg-gray-50 rounded-md text-xs">
-                    <p className="font-medium">Route: {selectedRoute}</p>
+                    <p className="font-medium">
+                      {isKannada ? "ಮಾರ್ಗ: " : "Route: "}{selectedRoute}
+                    </p>
                     <div className="flex justify-between items-center mt-1">
-                      <span>Next departure:</span>
-                      <span className="font-medium">{Math.floor(Math.random() * 15) + 1} mins</span>
+                      <span>{isKannada ? "ಮುಂದಿನ ನಿರ್ಗಮನ:" : "Next departure:"}</span>
+                      <span className="font-medium">{Math.floor(Math.random() * 15) + 1} {isKannada ? "ನಿಮಿಷಗಳು" : "mins"}</span>
                     </div>
                   </div>
                 )}

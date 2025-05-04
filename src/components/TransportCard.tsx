@@ -1,10 +1,10 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Lock, Unlock } from "lucide-react";
+import { Lock, Unlock, Eye, EyeOff } from "lucide-react";
 import BiometricPrompt from "./BiometricPrompt";
 import TransactionHistory from "./TransactionHistory";
+import PinVerification from "./PinVerification";
 
 type CardStatus = "active" | "locked";
 
@@ -14,6 +14,7 @@ interface TransportCardProps {
   issueDate?: string;
   expiryDate?: string;
   initialStatus?: CardStatus;
+  isKannada?: boolean;
 }
 
 const TransportCard = ({
@@ -21,21 +22,25 @@ const TransportCard = ({
   userName = "K. R. Venkatesh",
   issueDate = "2023-06-15",
   expiryDate = "2028-06-14",
-  initialStatus = "active"
+  initialStatus = "active",
+  isKannada = false
 }: TransportCardProps) => {
   const [cardStatus, setCardStatus] = useState<CardStatus>(initialStatus);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [pendingAction, setPendingAction] = useState<"lock" | "unlock" | null>(null);
+  const [isPinOpen, setIsPinOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<"lock" | "unlock" | "view-balance" | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showBalance, setShowBalance] = useState(false);
+  const [balance, setBalance] = useState(750);
 
   // Format dates
-  const formattedIssueDate = new Date(issueDate).toLocaleDateString("en-IN", {
+  const formattedIssueDate = new Date(issueDate).toLocaleDateString(isKannada ? "kn-IN" : "en-IN", {
     day: "numeric",
     month: "short",
     year: "numeric"
   });
   
-  const formattedExpiryDate = new Date(expiryDate).toLocaleDateString("en-IN", {
+  const formattedExpiryDate = new Date(expiryDate).toLocaleDateString(isKannada ? "kn-IN" : "en-IN", {
     day: "numeric",
     month: "short",
     year: "numeric"
@@ -43,10 +48,15 @@ const TransportCard = ({
 
   const handleLockUnlock = (action: "lock" | "unlock") => {
     setPendingAction(action);
-    setIsAuthOpen(true);
+    setIsPinOpen(true);
   };
 
-  const handleAuthSuccess = async () => {
+  const handleViewBalance = () => {
+    setPendingAction("view-balance");
+    setIsPinOpen(true);
+  };
+
+  const handlePinSuccess = async () => {
     if (!pendingAction) return;
     
     setIsLoading(true);
@@ -55,18 +65,31 @@ const TransportCard = ({
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // In a real application, we would call the actual API endpoint
-      // const response = await fetch(`/api/card/${pendingAction}`, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ cardId })
-      // });
-      // if (!response.ok) throw new Error('Failed to update card status');
+      if (pendingAction === "view-balance") {
+        setShowBalance(true);
+      } else {
+        setCardStatus(pendingAction === "lock" ? "locked" : "active");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setIsLoading(false);
+      setIsPinOpen(false);
+      setPendingAction(null);
+    }
+  };
+
+  const handleAuthSuccess = async () => {
+    // Keep for backwards compatibility
+    if (!pendingAction) return;
+    
+    setIsLoading(true);
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       setCardStatus(pendingAction === "lock" ? "locked" : "active");
-      
-      // Show toast notification
-      console.log(`Card successfully ${pendingAction}ed`);
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -99,12 +122,12 @@ const TransportCard = ({
           {cardStatus === "active" ? (
             <>
               <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-              ACTIVE
+              {isKannada ? "ಸಕ್ರಿಯ" : "ACTIVE"}
             </>
           ) : (
             <>
               <Lock size={12} />
-              LOCKED
+              {isKannada ? "ಲಾಕ್ ಆಗಿದೆ" : "LOCKED"}
             </>
           )}
         </div>
@@ -113,8 +136,10 @@ const TransportCard = ({
         <div className="flex flex-col h-full justify-between text-white">
           <div className="flex justify-between items-start">
             <div>
-              <div className="font-bold text-sm">Universal Transport Card</div>
-              <div className="font-light text-xs opacity-80">Karnataka Unified Services</div>
+              <div className="font-bold text-sm">{isKannada ? "ಸಾರ್ವತ್ರಿಕ ಸಾರಿಗೆ ಕಾರ್ಡ್" : "Universal Transport Card"}</div>
+              <div className="font-light text-xs opacity-80">
+                {isKannada ? "ಕರ್ನಾಟಕ ಏಕೀಕೃತ ಸೇವೆಗಳು" : "Karnataka Unified Services"}
+              </div>
             </div>
             <div className="w-10 h-10">
               <img 
@@ -129,22 +154,26 @@ const TransportCard = ({
           </div>
           
           <div className="py-2">
-            <div className="text-xs opacity-70 mb-1">Card Number</div>
+            <div className="text-xs opacity-70 mb-1">
+              {isKannada ? "ಕಾರ್ಡ್ ಸಂಖ್ಯೆ" : "Card Number"}
+            </div>
             <div className="font-mono tracking-wider">{cardId}</div>
           </div>
           
           <div className="flex justify-between items-end">
             <div>
-              <div className="text-xs opacity-70 mb-1">Card Holder</div>
+              <div className="text-xs opacity-70 mb-1">
+                {isKannada ? "ಕಾರ್ಡ್ ಹೊಂದಿರುವವರು" : "Card Holder"}
+              </div>
               <div className="font-semibold">{userName}</div>
             </div>
             <div className="text-xs text-right">
               <div>
-                <span className="opacity-70">Issued: </span>
+                <span className="opacity-70">{isKannada ? "ನೀಡಿದ: " : "Issued: "}</span>
                 {formattedIssueDate}
               </div>
               <div>
-                <span className="opacity-70">Valid Till: </span>
+                <span className="opacity-70">{isKannada ? "ಅವಧಿ: " : "Valid Till: "}</span>
                 {formattedExpiryDate}
               </div>
             </div>
@@ -161,6 +190,55 @@ const TransportCard = ({
         )}
       </div>
       
+      {/* Balance Section */}
+      <div className={cn(
+        "w-full p-4 rounded-lg glassmorphism transition-all",
+        cardStatus === "locked" && "opacity-60 pointer-events-none"
+      )}>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold">
+            {isKannada ? "ಕಾರ್ಡ್ ಬ್ಯಾಲೆನ್ಸ್" : "Card Balance"}
+          </h3>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => showBalance ? setShowBalance(false) : handleViewBalance()}
+            className="flex items-center gap-1"
+          >
+            {showBalance ? (
+              <>
+                <EyeOff size={16} />
+                <span className="ml-1">{isKannada ? "ಮರೆಮಾಡಿ" : "Hide"}</span>
+              </>
+            ) : (
+              <>
+                <Eye size={16} />
+                <span className="ml-1">{isKannada ? "ತೋರಿಸಿ" : "Show"}</span>
+              </>
+            )}
+          </Button>
+        </div>
+        
+        <div className="mt-2">
+          {showBalance ? (
+            <div className="text-3xl font-bold">₹{balance.toFixed(2)}</div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <div className="h-6 bg-gray-300 rounded-md w-24"></div>
+              <span className="text-sm text-gray-500">
+                {isKannada ? "ಬ್ಯಾಲೆನ್ಸ್ ವೀಕ್ಷಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ" : "Click to view balance"}
+              </span>
+            </div>
+          )}
+        </div>
+        
+        <div className="mt-3 flex">
+          <Button className="w-full bg-karnataka-blue">
+            {isKannada ? "ಕಾರ್ಡ್ ರೀಚಾರ್ಜ್ ಮಾಡಿ" : "Recharge Card"}
+          </Button>
+        </div>
+      </div>
+      
       {/* Card Actions */}
       <div className="flex gap-4">
         <Button
@@ -168,26 +246,35 @@ const TransportCard = ({
           disabled={cardStatus === "locked" || isLoading}
           className="flex-1 bg-karnataka-blue hover:bg-karnataka-blue/80"
         >
-          <Lock size={18} className="mr-2" /> Lock Card
+          <Lock size={18} className="mr-2" /> {isKannada ? "ಕಾರ್ಡ್ ಲಾಕ್ ಮಾಡಿ" : "Lock Card"}
         </Button>
         <Button
           onClick={() => handleLockUnlock("unlock")}
           disabled={cardStatus === "active" || isLoading}
           className="flex-1 bg-green-600 hover:bg-green-700" 
         >
-          <Unlock size={18} className="mr-2" /> Unlock Card
+          <Unlock size={18} className="mr-2" /> {isKannada ? "ಕಾರ್ಡ್ ಅನ್‌ಲಾಕ್ ಮಾಡಿ" : "Unlock Card"}
         </Button>
       </div>
       
       {/* Transaction history */}
-      <TransactionHistory cardStatus={cardStatus} />
+      <TransactionHistory cardStatus={cardStatus} isKannada={isKannada} />
       
-      {/* Biometric Prompt */}
+      {/* PIN Verification */}
+      <PinVerification
+        isOpen={isPinOpen}
+        onOpenChange={setIsPinOpen}
+        onSuccess={handlePinSuccess}
+        action={pendingAction || ""}
+        isKannada={isKannada}
+      />
+      
+      {/* Biometric Prompt (kept for backward compatibility) */}
       <BiometricPrompt 
         isOpen={isAuthOpen} 
         onOpenChange={setIsAuthOpen}
         onAuthSuccess={handleAuthSuccess}
-        action={pendingAction}
+        action={pendingAction === "view-balance" ? null : pendingAction}
       />
     </div>
   );

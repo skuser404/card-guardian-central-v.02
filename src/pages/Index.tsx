@@ -44,13 +44,10 @@ const Index = () => {
               <h2 className="text-xl font-semibold mb-4">
                 {isKannada ? "ನಿಮ್ಮ ಸಾರ್ವತ್ರಿಕ ಸಾರಿಗೆ ಕಾರ್ಡ್" : "Your Universal Transport Card"}
               </h2>
-              <TransportCard initialStatus={cardStatus} />
+              <TransportCard initialStatus={cardStatus} isKannada={isKannada} />
             </section>
 
-            {/* Transaction History Section */}
-            <section>
-              <TransactionHistory cardStatus={cardStatus} isKannada={isKannada} />
-            </section>
+            {/* Transaction History Section - Removed from here as it's included in TransportCard */}
             
             {/* Emergency Section */}
             <section>

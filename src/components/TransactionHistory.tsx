@@ -5,57 +5,72 @@ type CardStatus = "active" | "locked";
 
 interface TransactionHistoryProps {
   cardStatus: CardStatus;
+  isKannada?: boolean; // Added language prop
 }
 
 const transactions = [
   {
     id: 1,
     type: "Bus Fare",
+    typeKn: "ಬಸ್ ದರ",
     amount: 25,
     date: "2025-05-03T08:35:00",
     service: "BMTC-300K",
-    route: "Majestic to Whitefield"
+    route: "Majestic to Whitefield",
+    routeKn: "ಮೆಜೆಸ್ಟಿಕ್‌ನಿಂದ ವೈಟ್‌ಫೀಲ್ಡ್"
   },
   {
     id: 2,
     type: "Metro Ticket",
+    typeKn: "ಮೆಟ್ರೋ ಟಿಕೆಟ್",
     amount: 35,
     date: "2025-05-02T18:22:00",
     service: "Purple Line",
-    route: "MG Road to Indiranagar"
+    route: "MG Road to Indiranagar",
+    routeKn: "ಎಂಜಿ ರಸ್ತೆಯಿಂದ ಇಂದಿರಾನಗರ"
   },
   {
     id: 3,
     type: "Card Recharge",
+    typeKn: "ಕಾರ್ಡ್ ರೀಚಾರ್ಜ್",
     amount: 500,
     date: "2025-05-01T14:15:00",
     service: "Online Payment",
-    route: "UPI Transaction"
+    route: "UPI Transaction",
+    routeKn: "ಯುಪಿಐ ವಹಿವಾಟು"
   },
   {
     id: 4,
     type: "Bus Fare",
+    typeKn: "ಬಸ್ ದರ",
     amount: 55,
     date: "2025-04-30T09:45:00",
     service: "KSRTC-Super Deluxe",
-    route: "Bangalore to Mysore"
+    route: "Bangalore to Mysore",
+    routeKn: "ಬೆಂಗಳೂರಿನಿಂದ ಮೈಸೂರು"
   },
   {
     id: 5,
     type: "Auto Fare",
+    typeKn: "ಆಟೋ ದರ",
     amount: 120,
     date: "2025-04-29T20:10:00",
     service: "Namma Yatri",
-    route: "Koramangala to HSR Layout"
+    route: "Koramangala to HSR Layout",
+    routeKn: "ಕೊರಮಂಗಲದಿಂದ ಎಚ್‌ಎಸ್‌ಆರ್ ಲೇಔಟ್"
   }
 ];
 
-const TransactionHistory = ({ cardStatus }: TransactionHistoryProps) => {
+const TransactionHistory = ({ cardStatus, isKannada = false }: TransactionHistoryProps) => {
   return (
     <div className="mt-4">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-semibold text-lg">Recent Transactions</h3>
-        <span className="text-sm text-karnataka-blue">View All</span>
+        <h3 className="font-semibold text-lg">
+          {isKannada ? "ಇತ್ತೀಚಿನ ವಹಿವಾಟುಗಳು" : "Recent Transactions"}
+        </h3>
+        <span className="text-sm text-karnataka-blue">
+          {isKannada ? "ಎಲ್ಲವನ್ನು ನೋಡಿ" : "View All"}
+        </span>
       </div>
       
       <div className={cn(
@@ -64,11 +79,11 @@ const TransactionHistory = ({ cardStatus }: TransactionHistoryProps) => {
       )}>
         {transactions.map((transaction) => {
           const date = new Date(transaction.date);
-          const formattedDate = date.toLocaleDateString("en-IN", {
+          const formattedDate = date.toLocaleDateString(isKannada ? "kn-IN" : "en-IN", {
             day: "numeric",
             month: "short",
           });
-          const formattedTime = date.toLocaleTimeString("en-IN", {
+          const formattedTime = date.toLocaleTimeString(isKannada ? "kn-IN" : "en-IN", {
             hour: "2-digit",
             minute: "2-digit",
             hour12: true,
@@ -100,8 +115,12 @@ const TransactionHistory = ({ cardStatus }: TransactionHistoryProps) => {
                   )}
                 </div>
                 <div>
-                  <p className="font-medium">{transaction.type}</p>
-                  <p className="text-xs text-gray-500">{transaction.service} · {transaction.route}</p>
+                  <p className="font-medium">
+                    {isKannada ? transaction.typeKn : transaction.type}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {transaction.service} · {isKannada ? transaction.routeKn : transaction.route}
+                  </p>
                 </div>
               </div>
               <div className="text-right">

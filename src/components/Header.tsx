@@ -5,12 +5,30 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { Globe } from 'lucide-react';
 
-const Header = () => {
-  const [isKannada, setIsKannada] = useState(false);
+interface HeaderProps {
+  isKannada?: boolean;
+  onLanguageChange?: (isKannada: boolean) => void;
+}
+
+const Header = ({ isKannada: propIsKannada, onLanguageChange }: HeaderProps = {}) => {
+  const [isKannada, setIsKannada] = useState(propIsKannada || false);
   const { toast } = useToast();
 
+  // Sync state with props when they change
+  useEffect(() => {
+    if (propIsKannada !== undefined) {
+      setIsKannada(propIsKannada);
+    }
+  }, [propIsKannada]);
+
   const toggleLanguage = () => {
-    setIsKannada(!isKannada);
+    const newValue = !isKannada;
+    setIsKannada(newValue);
+    
+    // Notify parent component if callback exists
+    if (onLanguageChange) {
+      onLanguageChange(newValue);
+    }
     
     // Show toast notification when language changes
     toast({

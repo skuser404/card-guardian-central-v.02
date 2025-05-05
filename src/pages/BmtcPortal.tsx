@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { BusFront, Map, Route, Navigation, CircleDot } from "lucide-react";
+import { BusFront, Map, Route, Navigation, CircleDot, FileText, User, Users } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 
 const BmtcPortal = () => {
@@ -345,25 +345,126 @@ const BmtcPortal = () => {
             <TabsContent value="passes">
               <Card>
                 <CardHeader>
-                  <CardTitle>{isKannada ? "ಬಸ್ ಪಾಸ್" : "Bus Passes"}</CardTitle>
+                  <CardTitle className="flex items-center">
+                    <FileText className="mr-2 h-5 w-5" />
+                    {isKannada ? "ಬಸ್ ಪಾಸ್ ಮಾರ್ಗದರ್ಶಿ" : "Bus Pass Guide"}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="glassmorphism p-4 rounded-lg">
-                      <h3 className="font-medium mb-2">{isKannada ? "ದೈನಿಕ ಪಾಸ್" : "Daily Pass"}</h3>
-                      <p className="text-2xl font-bold">₹70</p>
-                      <p className="text-sm text-gray-600 mb-4">
-                        {isKannada ? "24 ಗಂಟೆಗಳ ಅನಿಯಮಿತ ಪ್ರಯಾಣ" : "Unlimited travel for 24 hours"}
-                      </p>
-                      <Button className="w-full">{isKannada ? "ಪಾಸ್ ಖರೀದಿಸಿ" : "Buy Pass"}</Button>
+                  <div className="space-y-6">
+                    {/* Student Pass Information */}
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-semibold flex items-center">
+                        <User className="mr-2 h-5 w-5 text-karnataka-blue" />
+                        {isKannada ? "ವಿದ್ಯಾರ್ಥಿ ಬಸ್ ಪಾಸ್ ಅರ್ಜಿ ಪ್ರಕ್ರಿಯೆ" : "Student Bus Pass Application Process"}
+                      </h3>
+                      
+                      <div className="glassmorphism p-4 rounded-lg">
+                        <h4 className="font-medium mb-2">{isKannada ? "ಅರ್ಹತಾ ಮಾನದಂಡಗಳು" : "Eligibility Criteria"}</h4>
+                        <ul className="list-disc list-inside space-y-1 text-sm">
+                          <li>{isKannada ? "ಮಾನ್ಯತೆ ಪಡೆದ ಶೈಕ್ಷಣಿಕ ಸಂಸ್ಥೆಗಳಲ್ಲಿ ದಾಖಲಾದ ವಿದ್ಯಾರ್ಥಿಗಳು" : "Students enrolled in recognized educational institutions"}</li>
+                          <li>{isKannada ? "ಶೈಕ್ಷಣಿಕ ವರ್ಷ 2024-25ಕ್ಕೆ ಮಾನ್ಯ" : "Valid for the academic year 2024-25"}</li>
+                          <li>{isKannada ? "BMTC ಕಾರ್ಯಾಚರಣೆಯ ಪ್ರದೇಶದೊಳಗಿನ ನಿವಾಸ" : "Residency within BMTC operational area"}</li>
+                        </ul>
+                      </div>
+                      
+                      <div className="glassmorphism p-4 rounded-lg">
+                        <h4 className="font-medium mb-2">{isKannada ? "ಅರ್ಜಿ ವಿಧಾನಗಳು" : "Application Methods"}</h4>
+                        <ul className="list-disc list-inside space-y-1 text-sm">
+                          <li>{isKannada ? "ಸೇವಾ ಸಿಂಧು ಪೋರ್ಟಲ್ ಮೂಲಕ ಆನ್‌ಲೈನ್" : "Online through Seva Sindhu portal"}</li>
+                          <li>{isKannada ? "ಬೆಂಗಳೂರು ವನ್ ಕೇಂದ್ರಗಳಲ್ಲಿ" : "At BangaloreOne centers"}</li>
+                          <li>{isKannada ? "ಶೈಕ್ಷಣಿಕ ಸಂಸ್ಥೆಗಳ ಮೂಲಕ" : "Through educational institutions"}</li>
+                        </ul>
+                      </div>
+                      
+                      <div className="glassmorphism p-4 rounded-lg">
+                        <h4 className="font-medium mb-2">{isKannada ? "ಅಗತ್ಯ ದಾಖಲೆಗಳು" : "Required Documents"}</h4>
+                        <ul className="list-disc list-inside space-y-1 text-sm">
+                          <li>{isKannada ? "ಆಧಾರ್ ಕಾರ್ಡ್" : "Aadhaar Card"}</li>
+                          <li>{isKannada ? "ಬಿಳಿ ಹಿನ್ನೆಲೆಯೊಂದಿಗೆ ಇತ್ತೀಚಿನ ಪಾಸ್‌ಪೋರ್ಟ್-ಅಳತೆಯ ಭಾವಚಿತ್ರ" : "Recent passport-size photograph with white background"}</li>
+                          <li>{isKannada ? "ಶೈಕ್ಷಣಿಕ ಸಂಸ್ಥೆಯಿಂದ ಪ್ರವೇಶ/ಶುಲ್ಕ ರಸೀದಿ" : "Admission/fee receipt from educational institution"}</li>
+                          <li>{isKannada ? "ಸಂಸ್ಥೆಯ ID ಕಾರ್ಡ್" : "Institute ID card"}</li>
+                        </ul>
+                      </div>
+                      
+                      <div className="glassmorphism p-4 rounded-lg">
+                        <h4 className="font-medium mb-2">{isKannada ? "ಹಂತ ಹಂತದ ಅರ್ಜಿ ಪ್ರಕ್ರಿಯೆ" : "Step-by-Step Application Process"}</h4>
+                        <div className="space-y-3">
+                          <div>
+                            <h5 className="text-sm font-medium">{isKannada ? "ಸೇವಾ ಸಿಂಧು ಮೂಲಕ ಆನ್‌ಲೈನ್ ಅರ್ಜಿ" : "Online Application through Seva Sindhu"}</h5>
+                            <ol className="list-decimal list-inside space-y-1 text-sm ml-2">
+                              <li>{isKannada ? "https://sevasindhu.karnataka.gov.in ಗೆ ಭೇಟಿ ನೀಡಿ" : "Visit https://sevasindhu.karnataka.gov.in"}</li>
+                              <li>{isKannada ? "ಆಧಾರ್ ಸಂಖ್ಯೆಯನ್ನು ಬಳಸಿ ಲಾಗಿನ್ ಮಾಡಿ" : "Login using Aadhaar number"}</li>
+                              <li>{isKannada ? "ವೈಯಕ್ತಿಕ ಮತ್ತು ಶೈಕ್ಷಣಿಕ ವಿವರಗಳೊಂದಿಗೆ ಅಪ್ಲಿಕೇಶನ್ ಫಾರ್ಮ್ ಭರ್ತಿ ಮಾಡಿ" : "Fill application form with personal and educational details"}</li>
+                              <li>{isKannada ? "ಅಗತ್ಯ ದಾಖಲೆಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ" : "Upload required documents"}</li>
+                              <li>{isKannada ? "ಅಪ್ಲಿಕೇಶನ್ ಸಲ್ಲಿಸಿ" : "Submit application"}</li>
+                            </ol>
+                          </div>
+                          
+                          <div>
+                            <h5 className="text-sm font-medium">{isKannada ? "ಬೆಂಗಳೂರು ವನ್ ಕೇಂದ್ರಗಳಲ್ಲಿ ಅರ್ಜಿ" : "Application at BangaloreOne Centers"}</h5>
+                            <ol className="list-decimal list-inside space-y-1 text-sm ml-2">
+                              <li>{isKannada ? "ಅಗತ್ಯ ದಾಖಲೆಗಳೊಂದಿಗೆ ಯಾವುದೇ ಬೆಂಗಳೂರು ವನ್ ಕೇಂದ್ರಕ್ಕೆ ಭೇಟಿ ನೀಡಿ" : "Visit any BangaloreOne center with required documents"}</li>
+                              <li>{isKannada ? "ಅಪ್ಲಿಕೇಶನ್ ಫಾರ್ಮ್ ಭರ್ತಿ ಮಾಡಿ" : "Fill application form"}</li>
+                              <li>{isKannada ? "₹30 ಸೇವಾ ಶುಲ್ಕವನ್ನು ಪಾವತಿಸಿ" : "Pay service charge of Rs. 30"}</li>
+                              <li>{isKannada ? "ಅಪ್ಲಿಕೇಶನ್ ಸಲ್ಲಿಸಿ" : "Submit application"}</li>
+                            </ol>
+                          </div>
+                          
+                          <div>
+                            <h5 className="text-sm font-medium">{isKannada ? "ಪಾಸ್ ಸಂಗ್ರಹ" : "Collection of Pass"}</h5>
+                            <ol className="list-decimal list-inside space-y-1 text-sm ml-2">
+                              <li>{isKannada ? "ನಿಗದಿಪಡಿಸಿದ BMTC ಬಸ್ ನಿಲ್ದಾಣಗಳಿಗೆ ಭೇಟಿ ನೀಡಿ" : "Visit designated BMTC bus stations"}</li>
+                              <li>{isKannada ? "ನಿಗದಿತ ಶುಲ್ಕವನ್ನು ಪಾವತಿಸಿ (ನಗದು/ಕಾರ್ಡ್/UPI)" : "Pay the prescribed fee (cash/card/UPI)"}</li>
+                              <li>{isKannada ? "ನಿಮ್ಮ ಪಾಸ್ ಸಂಗ್ರಹಿಸಿ" : "Collect your pass"}</li>
+                            </ol>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="glassmorphism p-4 rounded-lg">
-                      <h3 className="font-medium mb-2">{isKannada ? "ಮಾಸಿಕ ಪಾಸ್" : "Monthly Pass"}</h3>
-                      <p className="text-2xl font-bold">₹1,050</p>
-                      <p className="text-sm text-gray-600 mb-4">
-                        {isKannada ? "30 ದಿನಗಳ ಅನಿಯಮಿತ ಪ್ರಯಾಣ" : "Unlimited travel for 30 days"}
-                      </p>
-                      <Button className="w-full">{isKannada ? "ಪಾಸ್ ಖರೀದಿಸಿ" : "Buy Pass"}</Button>
+                    
+                    {/* Worker Pass Information */}
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-semibold flex items-center">
+                        <Users className="mr-2 h-5 w-5 text-karnataka-blue" />
+                        {isKannada ? "ಕಾರ್ಮಿಕ/ಮಾಸಿಕ ಪಾಸ್ ಅರ್ಜಿ ಪ್ರಕ್ರಿಯೆ" : "Worker/Monthly Pass Application Process"}
+                      </h3>
+                      
+                      <div className="glassmorphism p-4 rounded-lg">
+                        <h4 className="font-medium mb-2">{isKannada ? "ಲಭ್ಯವಿರುವ ಪಾಸ್ ಪ್ರಕಾರಗಳು" : "Types of Passes Available"}</h4>
+                        <ul className="list-disc list-inside space-y-1 text-sm">
+                          <li>{isKannada ? "ಸಾಮಾನ್ಯ ಸೇವೆ ಮಾಸಿಕ ಪಾಸ್: ₹1,200" : "Ordinary service monthly pass: Rs. 1,200"}</li>
+                          <li>{isKannada ? "ಹಿರಿಯ ನಾಗರಿಕ ಸಾಮಾನ್ಯ ಸೇವೆ ಮಾಸಿಕ ಪಾಸ್: ₹1,080" : "Senior citizen ordinary service monthly pass: Rs. 1,080"}</li>
+                          <li>{isKannada ? "ನೈಸ್ ರಸ್ತೆ ಮಾಸಿಕ ಪಾಸ್ (ಟೋಲ್ ಸೇರಿದಂತೆ): ₹2,350" : "Nice Road Monthly Pass (inclusive of toll): Rs. 2,350"}</li>
+                          <li>{isKannada ? "ವಜ್ರ ಗೋಲ್ಡ್ ಮಾಸಿಕ ಪಾಸ್: ₹2,000" : "Vajra Gold Monthly pass: Rs. 2,000"}</li>
+                        </ul>
+                      </div>
+                      
+                      <div className="glassmorphism p-4 rounded-lg">
+                        <h4 className="font-medium mb-2">{isKannada ? "ಅರ್ಜಿ ಪ್ರಕ್ರಿಯೆ" : "Application Process"}</h4>
+                        <ol className="list-decimal list-inside space-y-1 text-sm">
+                          <li>{isKannada ? "BMTC ಬಸ್ ನಿಲ್ದಾಣದ ಕೌಂಟರ್‌ಗಳಿಗೆ ಅಥವಾ ಫ್ರಾಂಚೈಸಿ ಕೌಂಟರ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಿ" : "Visit BMTC bus stand counters or franchisee counters"}</li>
+                          <li>{isKannada ? "ಮಾನ್ಯ ID ಪುರಾವೆಯನ್ನು ಸಲ್ಲಿಸಿ (PAN ಕಾರ್ಡ್, ಡ್ರೈವಿಂಗ್ ಲೈಸೆನ್ಸ್, ಮತದಾರ ID, ಪಾಸ್‌ಪೋರ್ಟ್, ಇತ್ಯಾದಿ)" : "Submit valid ID proof (PAN card, driving license, voter ID, passport, etc.)"}</li>
+                          <li>{isKannada ? "ಅಪ್ಲಿಕೇಶನ್ ಫಾರ್ಮ್ ಭರ್ತಿ ಮಾಡಿ" : "Fill application form"}</li>
+                          <li>{isKannada ? "ನಿಗದಿತ ಶುಲ್ಕವನ್ನು ಪಾವತಿಸಿ" : "Pay the prescribed fee"}</li>
+                          <li>{isKannada ? "ನಿಮ್ಮ ಪಾಸ್ ಸಂಗ್ರಹಿಸಿ" : "Collect your pass"}</li>
+                        </ol>
+                      </div>
+                      
+                      <div className="glassmorphism p-4 rounded-lg">
+                        <h4 className="font-medium mb-2">{isKannada ? "ನಿರ್ಮಾಣ ಕಾರ್ಮಿಕರಿಗಾಗಿ" : "For Construction Workers"}</h4>
+                        <p className="text-sm mb-2">{isKannada ? "ಬೆಂಗಳೂರಿನ ಶಾಶ್ವತ ನಿವಾಸಿಗಳಾಗಿರುವ ನೋಂದಾಯಿತ ನಿರ್ಮಾಣ ಕಾರ್ಮಿಕರು ಉಚಿತ ಬಸ್ ಪಾಸ್‌ಗಳಿಗೆ ಅರ್ಜಿ ಸಲ್ಲಿಸಬಹುದು" : "Registered construction workers who are permanent residents of Bengaluru can apply for free bus passes"}</p>
+                        <p className="text-sm">{isKannada ? "ಸೇವಾ ಸಿಂಧು ಪೋರ್ಟಲ್ ಮೂಲಕ ಗ್ರಾಮ ಒನ್ ಅಥವಾ ಕರ್ನಾಟಕ ಒನ್ ಕೇಂದ್ರಗಳ ಮೂಲಕ ಅರ್ಜಿ ಸಲ್ಲಿಸಿ" : "Apply through Grama One or Karnataka One centers via Seva Sindhu portal"}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-center mt-4">
+                      <Button 
+                        variant="outline" 
+                        className="border-karnataka-blue text-karnataka-blue hover:bg-karnataka-blue/10"
+                      >
+                        {isKannada ? "ಪಾಸ್ ಫಾರ್ಮ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ" : "Download Pass Form"}
+                      </Button>
                     </div>
                   </div>
                 </CardContent>
@@ -407,3 +508,4 @@ const BmtcPortal = () => {
 };
 
 export default BmtcPortal;
+

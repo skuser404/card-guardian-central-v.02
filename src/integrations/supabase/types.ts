@@ -9,7 +9,107 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name: string
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          card_id: string
+          created_at: string
+          id: string
+          route: string | null
+          service: string
+          transaction_date: string
+          type: string
+        }
+        Insert: {
+          amount: number
+          card_id: string
+          created_at?: string
+          id?: string
+          route?: string | null
+          service: string
+          transaction_date?: string
+          type: string
+        }
+        Update: {
+          amount?: number
+          card_id?: string
+          created_at?: string
+          id?: string
+          route?: string | null
+          service?: string
+          transaction_date?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "transport_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transport_cards: {
+        Row: {
+          balance: number
+          card_number: string
+          created_at: string
+          expiry_date: string
+          id: string
+          issue_date: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          card_number: string
+          created_at?: string
+          expiry_date: string
+          id?: string
+          issue_date?: string
+          status: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          card_number?: string
+          created_at?: string
+          expiry_date?: string
+          id?: string
+          issue_date?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

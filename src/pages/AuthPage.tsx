@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -13,29 +13,47 @@ interface AuthPageProps {
 
 const AuthPage = ({ isKannada = false, onLanguageChange }: AuthPageProps) => {
   const navigate = useNavigate();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   
   useEffect(() => {
-    // Check if user is already logged in, if so redirect to home
-    const checkUser = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        navigate("/");
-      }
-    };
-    
-    checkUser();
-    
-    // Listen for auth changes
+    // First set up the auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session) {
         navigate("/");
       }
     });
     
+    // Then check for existing session
+    const checkUser = async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (data.session) {
+          navigate("/");
+        }
+      } catch (error) {
+        console.error("Error checking authentication:", error);
+      } finally {
+        setIsCheckingAuth(false);
+      }
+    };
+    
+    checkUser();
+    
     return () => {
       subscription.unsubscribe();
     };
   }, [navigate]);
+  
+  // Show loading state while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-lg">
+          {isKannada ? "ಲೋಡ್ ಆಗುತ್ತಿದೆ..." : "Loading..."}
+        </p>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen">

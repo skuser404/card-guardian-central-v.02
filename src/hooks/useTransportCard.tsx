@@ -3,176 +3,206 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
 
-export type CardStatus = "active" | "locked" | "expired";
+// Define CardStatus type to match the SQL check constraint
+type CardStatus = 'active' | 'locked' | 'expired';
 
-export interface TransportCardData {
+// Define the shape of transaction data
+interface TransactionData {
   id: string;
+  card_id: string;
+  type: string;
+  amount: number;
+  service: string;
+  route?: string;
+  transaction_date: string;
+  created_at: string;
+}
+
+// Define the shape of transport card data
+interface TransportCardData {
+  id: string;
+  user_id: string;
   card_number: string;
   balance: number;
   status: CardStatus;
   issue_date: string;
   expiry_date: string;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface Transaction {
-  id: string;
-  type: string;
-  amount: number;
-  service: string;
-  route: string;
-  transaction_date: string;
-}
-
-export const useTransportCard = () => {
+const useTransportCard = () => {
   const [card, setCard] = useState<TransportCardData | null>(null);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [transactions, setTransactions] = useState<TransactionData[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if user is authenticated
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setIsAuthenticated(!!data.session);
-      setUser(data.session?.user || null);
-    };
+    const fetchCardData = async () => {
+      setIsLoading(true);
+      setError(null);
 
-    checkSession();
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          setError('No authenticated user found');
+          setIsLoading(false);
+          return;
+        }
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setIsAuthenticated(!!session);
-        setUser(session?.user || null);
+        // Fetch user's transport card
+        const { data: cardData, error: cardError } = await supabase
+          .from('transport_cards')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .single();
+
+        if (cardError) {
+          console.error('Error fetching card data:', cardError);
+          setError('Failed to fetch your transport card data');
+          setIsLoading(false);
+          return;
+        }
+
+        if (cardData) {
+          // Ensure status is one of the allowed CardStatus values
+          const typedCardData: TransportCardData = {
+            ...cardData,
+            status: cardData.status as CardStatus
+          };
+          
+          setCard(typedCardData);
+
+          // Fetch transaction history for this card
+          const { data: transactionData, error: transactionError } = await supabase
+            .from('transactions')
+            .select('*')
+            .eq('card_id', cardData.id)
+            .order('transaction_date', { ascending: false });
+
+          if (transactionError) {
+            console.error('Error fetching transaction data:', transactionError);
+            setError('Failed to fetch your transaction history');
+          } else {
+            setTransactions(transactionData || []);
+          }
+        }
+
+      } catch (err) {
+        console.error('Unexpected error:', err);
+        setError('An unexpected error occurred');
+      } finally {
+        setIsLoading(false);
       }
-    );
-
-    return () => {
-      subscription.unsubscribe();
     };
+
+    fetchCardData();
   }, []);
 
-  useEffect(() => {
-    // Fetch card data if user is authenticated
-    if (user) {
-      fetchCardData();
-    } else {
-      setIsLoading(false);
-    }
-  }, [user]);
-
-  const fetchCardData = async () => {
+  const updateCardBalance = async (amount: number): Promise<boolean> => {
+    if (!card) return false;
+    
     try {
-      setIsLoading(true);
-
-      // Get user's card
-      const { data: cardData, error: cardError } = await supabase
-        .from('transport_cards')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      if (cardError) throw cardError;
-
-      setCard(cardData);
-
-      // Get card transactions
-      if (cardData) {
-        const { data: transactionData, error: transactionError } = await supabase
-          .from('transactions')
-          .select('*')
-          .eq('card_id', cardData.id)
-          .order('transaction_date', { ascending: false });
-
-        if (transactionError) throw transactionError;
-
-        setTransactions(transactionData || []);
+      const newBalance = card.balance + amount;
+      
+      if (newBalance < 0) {
+        toast({
+          title: "Insufficient balance",
+          description: "You don't have enough balance for this transaction.",
+          variant: "destructive"
+        });
+        return false;
       }
-    } catch (error: any) {
-      console.error('Error fetching card data:', error);
-      toast({
-        title: "Failed to load card data",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const updateCardStatus = async (status: CardStatus) => {
-    try {
-      if (!card) return;
-
-      const { error } = await supabase
+      
+      const { data, error } = await supabase
         .from('transport_cards')
-        .update({ status, updated_at: new Date().toISOString() })
-        .eq('id', card.id);
-
-      if (error) throw error;
-
-      setCard((prev) => prev ? { ...prev, status } : null);
-
-      toast({
-        title: `Card ${status === 'active' ? 'unlocked' : 'locked'} successfully`,
-      });
-    } catch (error: any) {
-      console.error('Error updating card status:', error);
-      toast({
-        title: "Failed to update card status",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
-
-  const rechargeCard = async (amount: number) => {
-    try {
-      if (!card) return;
-
-      // Start a transaction with Supabase
-      const { data: updatedCard, error: updateError } = await supabase
-        .from('transport_cards')
-        .update({ 
-          balance: card.balance + amount,
-          updated_at: new Date().toISOString() 
-        })
+        .update({ balance: newBalance })
         .eq('id', card.id)
+        .select('*')
+        .single();
+        
+      if (error) {
+        console.error('Error updating balance:', error);
+        toast({
+          title: "Update failed",
+          description: "Failed to update card balance. Please try again.",
+          variant: "destructive"
+        });
+        return false;
+      }
+      
+      // Update local state with the updated card
+      if (data) {
+        // Ensure status is one of the allowed CardStatus values
+        const typedCardData: TransportCardData = {
+          ...data,
+          status: data.status as CardStatus
+        };
+        
+        setCard(typedCardData);
+        
+        toast({
+          title: "Balance updated",
+          description: `Your new balance is ₹${newBalance.toFixed(2)}`,
+        });
+      }
+      
+      return true;
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      toast({
+        title: "Update failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
+      return false;
+    }
+  };
+
+  const recordTransaction = async (type: string, amount: number, service: string, route?: string): Promise<boolean> => {
+    if (!card) return false;
+    
+    try {
+      const { data, error } = await supabase
+        .from('transactions')
+        .insert([
+          {
+            card_id: card.id,
+            type,
+            amount,
+            service,
+            route,
+            transaction_date: new Date().toISOString()
+          }
+        ])
         .select()
         .single();
-
-      if (updateError) throw updateError;
-
-      // Record the transaction
-      const { error: transactionError } = await supabase
-        .from('transactions')
-        .insert({
-          card_id: card.id,
-          type: 'Card Recharge',
-          amount: amount,
-          service: 'Online Payment',
-          route: 'UPI Transaction',
+        
+      if (error) {
+        console.error('Error recording transaction:', error);
+        toast({
+          title: "Transaction failed",
+          description: "Failed to record transaction. Please try again.",
+          variant: "destructive"
         });
-
-      if (transactionError) throw transactionError;
-
-      setCard(updatedCard);
+        return false;
+      }
       
-      // Refresh transactions list
-      fetchCardData();
-
+      // Update transactions list
+      if (data) {
+        setTransactions(prev => [data, ...prev]);
+      }
+      
+      return true;
+    } catch (err) {
+      console.error('Unexpected error:', err);
       toast({
-        title: "Recharge successful",
-        description: `₹${amount} added to your card`,
+        title: "Transaction failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
       });
-    } catch (error: any) {
-      console.error('Error recharging card:', error);
-      toast({
-        title: "Recharge failed",
-        description: error.message,
-        variant: "destructive",
-      });
+      return false;
     }
   };
 
@@ -180,10 +210,10 @@ export const useTransportCard = () => {
     card,
     transactions,
     isLoading,
-    isAuthenticated,
-    user,
-    updateCardStatus,
-    rechargeCard,
-    refreshData: fetchCardData,
+    error,
+    updateCardBalance,
+    recordTransaction
   };
 };
+
+export default useTransportCard;

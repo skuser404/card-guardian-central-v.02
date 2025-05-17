@@ -14,6 +14,8 @@ interface AuthProps {
 export const Auth = ({ isKannada = false }: AuthProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -25,7 +27,8 @@ export const Auth = ({ isKannada = false }: AuthProps) => {
         password,
         options: {
           data: {
-            full_name: email.split('@')[0], // Simple default name from email
+            full_name: fullName || email.split('@')[0], // Use provided name or default from email
+            phone_number: phoneNumber,
           },
         },
       });
@@ -128,6 +131,31 @@ export const Auth = ({ isKannada = false }: AuthProps) => {
         <TabsContent value="signup">
           <form onSubmit={handleSignUp}>
             <CardContent className="space-y-4 pt-4">
+              <div className="space-y-2">
+                <label htmlFor="full-name" className="text-sm font-medium">
+                  {isKannada ? "ಪೂರ್ಣ ಹೆಸರು" : "Full Name"}
+                </label>
+                <Input 
+                  id="full-name" 
+                  type="text" 
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="phone-number" className="text-sm font-medium">
+                  {isKannada ? "ಫೋನ್ ನಂಬರ್" : "Phone Number"}
+                </label>
+                <Input 
+                  id="phone-number" 
+                  type="tel" 
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="+91 XXXXX XXXXX"
+                  required
+                />
+              </div>
               <div className="space-y-2">
                 <label htmlFor="signup-email" className="text-sm font-medium">
                   {isKannada ? "ಇಮೇಲ್" : "Email"}

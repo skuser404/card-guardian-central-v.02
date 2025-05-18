@@ -59,14 +59,14 @@ export const Auth = ({ isKannada = false }: AuthProps) => {
         password,
       });
       if (error) throw error;
+      // Success case is handled by auth state change listener in AuthPage
     } catch (error: any) {
       toast({
         title: isKannada ? "ಲಾಗಿನ್ ವಿಫಲವಾಗಿದೆ" : "Login failed",
         description: error.message,
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
+      setLoading(false); // Only set loading false on error
     }
   };
 

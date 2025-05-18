@@ -3,16 +3,20 @@ import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { Globe } from 'lucide-react';
+import { Globe, LogOut } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   isKannada?: boolean;
   onLanguageChange?: (isKannada: boolean) => void;
+  showLogout?: boolean;
 }
 
-const Header = ({ isKannada: propIsKannada, onLanguageChange }: HeaderProps = {}) => {
+const Header = ({ isKannada: propIsKannada, onLanguageChange, showLogout = false }: HeaderProps = {}) => {
   const [isKannada, setIsKannada] = useState(propIsKannada || false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Sync state with props when they change
   useEffect(() => {
@@ -36,6 +40,16 @@ const Header = ({ isKannada: propIsKannada, onLanguageChange }: HeaderProps = {}
       description: newValue ? 'ಅಪ್ಲಿಕೇಶನ್ ಭಾಷೆಯನ್ನು ಈಗ ಕನ್ನಡಕ್ಕೆ ಬದಲಾಯಿಸಲಾಗಿದೆ' : 'The application language is now English',
       duration: 2000
     });
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: isKannada ? "ಲಾಗ್ ಔಟ್ ಯಶಸ್ವಿಯಾಗಿದೆ" : "Logout Successful",
+      description: isKannada ? "ನೀವು ಯಶಸ್ವಿಯಾಗಿ ಲಾಗ್ ಔಟ್ ಆಗಿದ್ದೀರಿ" : "You have been successfully logged out",
+      duration: 2000
+    });
+    navigate("/auth");
   };
 
   return (
@@ -84,6 +98,17 @@ const Header = ({ isKannada: propIsKannada, onLanguageChange }: HeaderProps = {}
             English
           </span>
         </Button>
+
+        {showLogout && (
+          <Button 
+            variant="outline" 
+            onClick={handleLogout}
+            className="flex items-center gap-1 border-karnataka-red text-karnataka-red hover:bg-karnataka-red/10"
+          >
+            <LogOut className="h-4 w-4" />
+            <span>{isKannada ? "ಲಾಗ್ ಔಟ್" : "Logout"}</span>
+          </Button>
+        )}
       </div>
     </header>
   );

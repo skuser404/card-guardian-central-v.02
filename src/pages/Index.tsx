@@ -22,7 +22,11 @@ const Index = () => {
       
       {/* Main Content */}
       <div className="container max-w-3xl mx-auto px-4 py-6">
-        <Header isKannada={isKannada} onLanguageChange={handleLanguageChange} />
+        <Header 
+          isKannada={isKannada} 
+          onLanguageChange={handleLanguageChange} 
+          showLogout={true} 
+        />
         
         <main className="my-6">
           <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center text-karnataka-blue">
@@ -35,7 +39,7 @@ const Index = () => {
               <h2 className="text-xl font-semibold mb-4">
                 {isKannada ? "ಲೈವ್ ಸಾರಿಗೆ ಸ್ಥಿತಿ" : "Live Transport Status"}
               </h2>
-              <LiveStatus />
+              <LiveStatus isKannada={isKannada} />
             </section>
             
             {/* Transport Card Section */}

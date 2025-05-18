@@ -1,10 +1,12 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Lock, Unlock, Eye, EyeOff } from "lucide-react";
 import BiometricPrompt from "./BiometricPrompt";
 import TransactionHistory from "./TransactionHistory";
 import PinVerification from "./PinVerification";
+import { supabase } from "@/integrations/supabase/client";
 
 type CardStatus = "active" | "locked";
 
@@ -19,7 +21,7 @@ interface TransportCardProps {
 
 const TransportCard = ({
   cardId = "KA-UTM-2023-56789",
-  userName = "K. R. Venkatesh",
+  userName,
   issueDate = "2023-06-15",
   expiryDate = "2028-06-14",
   initialStatus = "active",
@@ -32,6 +34,25 @@ const TransportCard = ({
   const [isLoading, setIsLoading] = useState(false);
   const [showBalance, setShowBalance] = useState(false);
   const [balance, setBalance] = useState(750);
+  const [cardHolderName, setCardHolderName] = useState(userName || "K. R. Venkatesh");
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        // Check if user metadata contains a name
+        const fullName = user.user_metadata?.full_name;
+        if (fullName) {
+          setCardHolderName(fullName);
+        } else {
+          // Fallback to email if no name is available
+          setCardHolderName(user.email?.split('@')[0] || "K. R. Venkatesh");
+        }
+      }
+    };
+
+    fetchUserDetails();
+  }, [userName]);
 
   // Format dates
   const formattedIssueDate = new Date(issueDate).toLocaleDateString(isKannada ? "kn-IN" : "en-IN", {
@@ -196,7 +217,7 @@ const TransportCard = ({
               <div className="text-xs opacity-70 mb-1">
                 {isKannada ? "ಕಾರ್ಡ್ ಹೊಂದಿರುವವರು" : "Card Holder"}
               </div>
-              <div className="font-semibold">{userName}</div>
+              <div className="font-semibold">{cardHolderName}</div>
             </div>
             <div className="text-xs text-right">
               <div>

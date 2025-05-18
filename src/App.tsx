@@ -12,6 +12,8 @@ import BmtcPortal from "./pages/BmtcPortal";
 import MetroPortal from "./pages/MetroPortal";
 import KsrtcPortal from "./pages/KsrtcPortal";
 import AutoTaxiPortal from "./pages/AutoTaxiPortal";
+import EmployeeLogin from "./pages/EmployeeLogin";
+import EmployeePortal from "./pages/EmployeePortal";
 import { supabase } from "./integrations/supabase/client";
 
 const queryClient = new QueryClient();
@@ -75,6 +77,15 @@ const App = () => {
             <Route path="/metro" element={<MetroPortal />} />
             <Route path="/ksrtc" element={<KsrtcPortal />} />
             <Route path="/auto-taxi" element={<AutoTaxiPortal />} />
+            <Route path="/employee-login" element={<EmployeeLogin />} />
+            <Route 
+              path="/employee-portal" 
+              element={
+                isAuthenticated ? 
+                  <EmployeePortal /> : 
+                  <Navigate to="/employee-login" replace />
+              } 
+            />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

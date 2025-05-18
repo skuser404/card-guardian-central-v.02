@@ -9,6 +9,144 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      bus_employees: {
+        Row: {
+          address: string | null
+          created_at: string
+          department: string
+          employee_id: string
+          experience_years: number | null
+          full_name: string
+          gender: string
+          id: string
+          phone_number: string | null
+          remarks: string | null
+          user_id: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          department: string
+          employee_id: string
+          experience_years?: number | null
+          full_name: string
+          gender: string
+          id?: string
+          phone_number?: string | null
+          remarks?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          department?: string
+          employee_id?: string
+          experience_years?: number | null
+          full_name?: string
+          gender?: string
+          id?: string
+          phone_number?: string | null
+          remarks?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      bus_routes: {
+        Row: {
+          arrival_time: string | null
+          bus_id: string
+          created_at: string
+          departure_time: string | null
+          id: string
+          stop_id: string
+          stop_order: number
+        }
+        Insert: {
+          arrival_time?: string | null
+          bus_id: string
+          created_at?: string
+          departure_time?: string | null
+          id?: string
+          stop_id: string
+          stop_order: number
+        }
+        Update: {
+          arrival_time?: string | null
+          bus_id?: string
+          created_at?: string
+          departure_time?: string | null
+          id?: string
+          stop_id?: string
+          stop_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bus_routes_bus_id_fkey"
+            columns: ["bus_id"]
+            isOneToOne: false
+            referencedRelation: "buses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bus_routes_stop_id_fkey"
+            columns: ["stop_id"]
+            isOneToOne: false
+            referencedRelation: "bus_stops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bus_stops: {
+        Row: {
+          created_at: string
+          id: string
+          location: string | null
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          location?: string | null
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          location?: string | null
+          name?: string
+        }
+        Relationships: []
+      }
+      buses: {
+        Row: {
+          bus_number: string
+          capacity: number
+          created_at: string
+          id: string
+          route: string | null
+          status: string
+          type: string
+        }
+        Insert: {
+          bus_number: string
+          capacity: number
+          created_at?: string
+          id?: string
+          route?: string | null
+          status?: string
+          type: string
+        }
+        Update: {
+          bus_number?: string
+          capacity?: number
+          created_at?: string
+          id?: string
+          route?: string | null
+          status?: string
+          type?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -32,6 +170,41 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      salary_history: {
+        Row: {
+          amount: number
+          created_at: string
+          effective_date: string
+          employee_id: string
+          id: string
+          remarks: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          effective_date: string
+          employee_id: string
+          id?: string
+          remarks?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          effective_date?: string
+          employee_id?: string
+          id?: string
+          remarks?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "salary_history_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "bus_employees"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       transactions: {
         Row: {

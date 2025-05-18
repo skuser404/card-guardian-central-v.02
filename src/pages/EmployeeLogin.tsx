@@ -1,0 +1,192 @@
+
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Shield, Bus } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+
+const EmployeeLogin = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [employeeId, setEmployeeId] = useState("");
+  const [isKannada, setIsKannada] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleLanguageChange = (value: boolean) => {
+    setIsKannada(value);
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage("");
+    setIsLoading(true);
+
+    try {
+      // Login with email and password
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (authError) throw authError;
+
+      if (authData?.user) {
+        // Verify that the user is an employee by checking employeeId
+        const { data: employeeData, error: employeeError } = await supabase
+          .from("bus_employees")
+          .select("*")
+          .eq("user_id", authData.user.id)
+          .eq("employee_id", employeeId)
+          .single();
+
+        if (employeeError || !employeeData) {
+          await supabase.auth.signOut();
+          throw new Error(isKannada 
+            ? "ಉದ್ಯೋಗಿ ID ಅಮಾನ್ಯವಾಗಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ." 
+            : "Invalid employee ID. Please try again."
+          );
+        }
+
+        toast({
+          title: isKannada ? "ಯಶಸ್ವಿ ಲಾಗಿನ್!" : "Login successful!",
+          description: isKannada 
+            ? "ನಿಮ್ಮ ಉದ್ಯೋಗಿ ಪೋರ್ಟಲ್‌ಗೆ ಸ್ವಾಗತ." 
+            : "Welcome to your employee portal.",
+        });
+        
+        // Navigate to employee dashboard
+        navigate("/employee-portal");
+      }
+    } catch (error: any) {
+      console.error(error);
+      setErrorMessage(error.message);
+      toast({
+        variant: "destructive",
+        title: isKannada ? "ಲಾಗಿನ್ ವಿಫಲವಾಗಿದೆ" : "Login Failed",
+        description: error.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen relative">
+      <div className="container max-w-4xl mx-auto px-4 py-6">
+        <Header isKannada={isKannada} onLanguageChange={handleLanguageChange} />
+        
+        <main className="my-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigate("/")}
+              className="hover:bg-karnataka-blue/10"
+            >
+              &larr; {isKannada ? "ಹಿಂದೆ" : "Back"}
+            </Button>
+            <h1 className="text-2xl md:text-3xl font-bold text-karnataka-blue flex items-center">
+              <Shield className="mr-2 h-8 w-8 text-karnataka-blue" />
+              {isKannada ? "ಉದ್ಯೋಗಿ ಲಾಗಿನ್" : "Employee Login"}
+            </h1>
+          </div>
+          
+          <Card className="mx-auto max-w-md">
+            <CardHeader className="text-center">
+              <div className="mx-auto w-16 h-16 mb-4 bg-karnataka-blue/10 rounded-full flex items-center justify-center">
+                <Bus className="h-10 w-10 text-karnataka-blue" />
+              </div>
+              <CardTitle>
+                {isKannada ? "ಕರ್ನಾಟಕ ಸಾರಿಗೆ ಉದ್ಯೋಗಿ ಲಾಗಿನ್" : "Karnataka Transport Employee Login"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {errorMessage && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertDescription>{errorMessage}</AlertDescription>
+                </Alert>
+              )}
+              
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="employeeId">
+                    {isKannada ? "ಉದ್ಯೋಗಿ ID" : "Employee ID"}
+                  </Label>
+                  <Input
+                    id="employeeId"
+                    placeholder={isKannada ? "ನಿಮ್ಮ ಉದ್ಯೋಗಿ ID ನಮೂದಿಸಿ" : "Enter your employee ID"}
+                    value={employeeId}
+                    onChange={(e) => setEmployeeId(e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="email">
+                    {isKannada ? "ಇಮೇಲ್" : "Email"}
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder={isKannada ? "ನಿಮ್ಮ ಇಮೇಲ್ ನಮೂದಿಸಿ" : "Enter your email"}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="password">
+                    {isKannada ? "ಪಾಸ್‌ವರ್ಡ್" : "Password"}
+                  </Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder={isKannada ? "ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ" : "Enter your password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                
+                <Button 
+                  type="submit" 
+                  className="w-full bg-karnataka-blue"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>{isKannada ? "ಲಾಗಿನ್ ಆಗುತ್ತಿದೆ..." : "Logging in..."}</>
+                  ) : (
+                    <>{isKannada ? "ಲಾಗಿನ್" : "Login"}</>
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+            <CardFooter className="text-center text-sm">
+              <p className="w-full">
+                {isKannada 
+                  ? "ಉದ್ಯೋಗಿಯಾಗಿ ನೋಂದಾಯಿಸಲು, ದಯವಿಟ್ಟು ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ"
+                  : "To register as an employee, please contact your administrator"
+                }
+              </p>
+            </CardFooter>
+          </Card>
+        </main>
+        
+        <Footer />
+      </div>
+    </div>
+  );
+};
+
+export default EmployeeLogin;

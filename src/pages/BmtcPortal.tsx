@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -8,6 +8,38 @@ import { Button } from "@/components/ui/button";
 import { BusFront, Map, Route, Navigation, CircleDot, FileText, User, Users, InfoIcon } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { supabase } from "@/integrations/supabase/client";
+
+// Define types
+type BusStop = {
+  id: string;
+  name: string;
+  location: string | null;
+}
+
+type Bus = {
+  id: string;
+  bus_number: string;
+  type: string;
+  capacity: number;
+  route: string | null;
+  status: string;
+}
+
+type BusRoute = {
+  id: number;
+  number: string;
+  from: string;
+  to: string;
+  fromKn?: string;
+  toKn?: string;
+  departureTime: string;
+  arrivalTime: string;
+  fare: string;
+  capacity: 'available' | 'standing' | 'overloaded';
+  isAC?: boolean;
+  plateNumber: string;
+};
 
 const BmtcPortal = () => {
   const navigate = useNavigate();
@@ -17,134 +49,9 @@ const BmtcPortal = () => {
   const [searchResults, setSearchResults] = useState<BusRoute[] | null>(null);
   const [isKannada, setIsKannada] = useState(false);
   const [showBusStopsList, setShowBusStopsList] = useState(false);
-  
-  // BMTC Bus Terminals and Stops Data
-  const majorBusStops = {
-    "Major Bus Terminals": [
-      "Kempegowda Bus Station (Majestic)",
-      "Shivajinagar Bus Station",
-      "K.R. Market Bus Station",
-      "Banashankari TTMC",
-      "Domlur TTMC",
-      "Jayanagar TTMC",
-      "Koramangala TTMC",
-      "Yeshwanthpur TTMC",
-      "Shantinagar Bus Station",
-      "Vijayanagar TTMC",
-      "Whitefield TTMC",
-      "Bannerghatta Bus Station",
-      "Peenya TTMC",
-      "ITPL Bus Station",
-      "Electronic City Bus Station"
-    ],
-    "North Bangalore": [
-      "Yelahanka Bus Stop",
-      "Yelahanka Old Town",
-      "Yelahanka New Town",
-      "Jakkur",
-      "Byatarayanapura",
-      "Kogilu Cross",
-      "Vidyaranyapura",
-      "Allalasandra",
-      "GKVK",
-      "Hebbal Bus Stop",
-      "Hebbal Flyover",
-      "Mekri Circle",
-      "CBI Hebbal Ring Road",
-      "Esteem Mall",
-      "Kempapura"
-    ],
-    "Airport Route": [
-      "Kempegowda International Airport",
-      "Airport Terminal",
-      "Devanahalli",
-      "Yelahanka Airforce Station",
-      "Sadahalli Gate",
-      "Chikkajala"
-    ],
-    "East Bangalore": [
-      "Indira Nagar",
-      "Thippasandra",
-      "100 Feet Road",
-      "HAL Market",
-      "HAL Airport",
-      "Domlur",
-      "KR Puram Bus Stand",
-      "KR Puram Railway Station",
-      "Horamavu",
-      "Banaswadi",
-      "Ramamurthy Nagar",
-      "Baiyappanahalli",
-      "Mahadevapura",
-      "ITPL",
-      "Marathahalli",
-      "Kundalahalli",
-      "Varthur"
-    ],
-    "Central Bangalore": [
-      "Malleswaram Circle",
-      "Malleswaram 8th Cross",
-      "Sadashivanagar",
-      "Bhashyam Circle",
-      "MG Road",
-      "Trinity Circle",
-      "Ulsoor",
-      "Cubbon Park",
-      "High Court",
-      "Commercial Street",
-      "Brigade Road",
-      "Residency Road"
-    ],
-    "South Bangalore": [
-      "Jayanagar 4th Block",
-      "Jayanagar Bus Stand",
-      "South End Circle",
-      "Tilak Nagar",
-      "Banashankari Stage I",
-      "Banashankari Stage II",
-      "Basavanagudi",
-      "Gandhi Bazaar",
-      "National College",
-      "BTM Layout",
-      "Silk Board",
-      "JP Nagar",
-      "HSR Layout",
-      "Bellandur",
-      "Madiwala",
-      "Koramangala"
-    ],
-    "West Bangalore": [
-      "Rajajinagar 1st Block",
-      "Dr. Rajkumar Road",
-      "Basaveshwara Nagar",
-      "Mahalakshmi Layout",
-      "Yeshwanthpur Bus Station",
-      "Yeshwanthpur Railway Station",
-      "Goraguntepalya",
-      "Peenya",
-      "Jalahalli",
-      "Mathikere"
-    ],
-    "Electronic City Area": [
-      "Electronic City Phase 1",
-      "Electronic City Phase 2",
-      "Neeladri Road",
-      "Hosa Road",
-      "Kudlu Gate",
-      "Bommanahalli",
-      "Singasandra"
-    ],
-    "Whitefield Area": [
-      "Whitefield",
-      "ITPL Main Gate",
-      "Hope Farm",
-      "Varthur Kodi",
-      "Kundanahalli Gate",
-      "Graphite India",
-      "EPIP Zone",
-      "Hoodi Circle"
-    ]
-  };
+  const [busStops, setBusStops] = useState<Record<string, string[]>>({});
+  const [loading, setLoading] = useState(true);
+  const [availableBuses, setAvailableBuses] = useState<Bus[]>([]);
   
   // BMTC Fare Information
   const fareInfo = {
@@ -176,30 +83,70 @@ const BmtcPortal = () => {
     { id: 4, name: "Banashankari to ITPL", nameKn: "ಬನಶಂಕರಿಯಿಂದ ಐಟಿಪಿಎಲ್", number: "501D", frequency: "20 mins", fare: "₹45", isAC: true, plateNumber: "KA-01-F-3456" }
   ];
   
-  // Define sample bus routes for demonstration
-  const busRoutes: BusRoute[] = [
-    { id: 1, number: "500D", from: "Majestic", to: "Whitefield", fromKn: "ಮೆಜೆಸ್ಟಿಕ್", toKn: "ವೈಟ್‌ಫೀಲ್ಡ್", departureTime: "10:15 AM", arrivalTime: "11:30 AM", fare: "₹30", capacity: "overloaded", isAC: false, plateNumber: "KA-01-F-1234" },
-    { id: 2, number: "500D", from: "Majestic", to: "Whitefield", fromKn: "ಮೆಜೆಸ್ಟಿಕ್", toKn: "ವೈಟ್‌ಫೀಲ್ಡ್", departureTime: "10:30 AM", arrivalTime: "11:45 AM", fare: "₹30", capacity: "standing", isAC: false, plateNumber: "KA-01-F-2345" },
-    { id: 3, number: "500D", from: "Majestic", to: "Whitefield", fromKn: "ಮೆಜೆಸ್ಟಿಕ್", toKn: "ವೈಟ್‌ಫೀಲ್ಡ್", departureTime: "10:45 AM", arrivalTime: "12:00 PM", fare: "₹30", capacity: "available", isAC: false, plateNumber: "KA-01-F-3456" },
-    { id: 4, number: "368", from: "KR Market", to: "HSR Layout", fromKn: "ಕೆ.ಆರ್. ಮಾರ್ಕೆಟ್", toKn: "ಎಚ್‌ಎಸ್‌ಆರ್ ಲೇಔಟ್", departureTime: "11:00 AM", arrivalTime: "12:15 PM", fare: "₹25", capacity: "overloaded", isAC: false, plateNumber: "KA-01-F-4567" },
-    { id: 5, number: "368", from: "KR Market", to: "HSR Layout", fromKn: "ಕೆ.ಆರ್. ಮಾರ್ಕೆಟ್", toKn: "ಎಚ್‌ಎಸ್‌ಆರ್ ಲೇಔಟ್", departureTime: "11:15 AM", arrivalTime: "12:30 PM", fare: "₹25", capacity: "standing", isAC: false, plateNumber: "KA-01-F-5678" },
-    { id: 6, number: "356CW", from: "Shivajinagar", to: "Electronic City", fromKn: "ಶಿವಾಜಿನಗರ", toKn: "ಎಲೆಕ್ಟ್ರಾನಿಕ್ ಸಿಟಿ", departureTime: "11:30 AM", arrivalTime: "12:45 PM", fare: "₹50", capacity: "available", isAC: true, plateNumber: "KA-01-F-6789" },
-  ];
-  
-  type BusRoute = {
-    id: number;
-    number: string;
-    from: string;
-    to: string;
-    fromKn?: string;
-    toKn?: string;
-    departureTime: string;
-    arrivalTime: string;
-    fare: string;
-    capacity: 'available' | 'standing' | 'overloaded';
-    isAC?: boolean;
-    plateNumber: string;
-  };
+  // Load bus stops from the database
+  useEffect(() => {
+    const fetchBusStops = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('bus_stops')
+          .select('*')
+          .order('name');
+          
+        if (error) {
+          throw error;
+        }
+
+        // Organize bus stops by region
+        const stopsByRegion: Record<string, string[]> = {};
+        
+        if (data) {
+          // Simulate regions based on location data
+          data.forEach((stop: BusStop) => {
+            const region = stop.location || "Other Areas";
+            if (!stopsByRegion[region]) {
+              stopsByRegion[region] = [];
+            }
+            stopsByRegion[region].push(stop.name);
+          });
+        }
+        
+        setBusStops(stopsByRegion);
+      } catch (error) {
+        console.error("Error fetching bus stops:", error);
+        toast({
+          variant: "destructive",
+          title: isKannada ? "ಬಸ್ ನಿಲ್ದಾಣಗಳನ್ನು ಪಡೆಯಲು ವಿಫಲವಾಗಿದೆ" : "Failed to fetch bus stops",
+          description: isKannada 
+            ? "ಬಸ್ ನಿಲ್ದಾಣಗಳನ್ನು ಪಡೆಯುವಾಗ ದೋಷ ಸಂಭವಿಸಿದೆ" 
+            : "An error occurred while fetching bus stops",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchBuses = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('buses')
+          .select('*')
+          .order('bus_number');
+          
+        if (error) {
+          throw error;
+        }
+
+        if (data) {
+          setAvailableBuses(data);
+        }
+      } catch (error) {
+        console.error("Error fetching buses:", error);
+      }
+    };
+
+    fetchBusStops();
+    fetchBuses();
+  }, [isKannada]);
 
   const handleLanguageChange = (value: boolean) => {
     setIsKannada(value);
@@ -215,28 +162,58 @@ const BmtcPortal = () => {
       return;
     }
     
-    // Filter routes based on input
-    // In real app, this would be an API call
-    const filteredRoutes = busRoutes.filter(route => {
-      return (
-        route.from.toLowerCase().includes(startPoint.toLowerCase()) ||
-        route.to.toLowerCase().includes(destination.toLowerCase())
-      );
+    // Create simulated search results based on available buses
+    const results: BusRoute[] = [];
+    
+    // Use the available buses to create routes between the selected points
+    availableBuses.forEach((bus, index) => {
+      if (index < 6) { // Limit to a reasonable number of results
+        // Create simulated departure and arrival times
+        const now = new Date();
+        const departure = new Date(now.getTime() + (15 + Math.random() * 30) * 60000);
+        const arrival = new Date(departure.getTime() + (45 + Math.random() * 30) * 60000);
+        
+        // Format times
+        const departureTime = departure.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const arrivalTime = arrival.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        // Random capacity
+        const capacities: Array<'available' | 'standing' | 'overloaded'> = ['available', 'standing', 'overloaded'];
+        const capacity = capacities[Math.floor(Math.random() * capacities.length)];
+        
+        // Calculate fare based on type
+        const isAC = bus.type.toLowerCase().includes('ac') || bus.type.toLowerCase().includes('airavat');
+        const baseFare = isAC ? 25 : 15;
+        const fare = `₹${baseFare + Math.floor(Math.random() * 20)}`;
+        
+        results.push({
+          id: index + 1,
+          number: bus.bus_number.split('-').pop() || "000",
+          from: startPoint,
+          to: destination,
+          departureTime,
+          arrivalTime,
+          fare,
+          capacity,
+          isAC,
+          plateNumber: bus.bus_number
+        });
+      }
     });
     
-    if (filteredRoutes.length === 0) {
+    if (results.length === 0) {
       toast({
         title: isKannada ? "ಯಾವುದೇ ಮಾರ್ಗಗಳು ಕಂಡುಬಂದಿಲ್ಲ" : "No routes found",
         description: isKannada ? "ಬೇರೆ ಸ್ಥಳಗಳನ್ನು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಕಾಗುಣಿತವನ್ನು ಪರಿಶೀಲಿಸಿ" : "Try different locations or check spelling",
       });
       setSearchResults([]);
     } else {
-      setSearchResults(filteredRoutes);
+      setSearchResults(results);
       toast({
         title: isKannada ? "ಮಾರ್ಗಗಳು ಕಂಡುಬಂದಿವೆ" : "Routes found",
         description: isKannada 
-          ? `ನಿಮ್ಮ ಹುಡುಕಾಟಕ್ಕೆ ಹೊಂದಿಕೆಯಾಗುವ ${filteredRoutes.length} ಮಾರ್ಗಗಳು ಕಂಡುಬಂದಿವೆ` 
-          : `Found ${filteredRoutes.length} routes matching your search`,
+          ? `ನಿಮ್ಮ ಹುಡುಕಾಟಕ್ಕೆ ಹೊಂದಿಕೆಯಾಗುವ ${results.length} ಮಾರ್ಗಗಳು ಕಂಡುಬಂದಿವೆ` 
+          : `Found ${results.length} routes matching your search`,
       });
     }
   };
@@ -345,22 +322,33 @@ const BmtcPortal = () => {
                         
                         {showBusStopsList && (
                           <div className="absolute z-10 mt-1 w-full max-h-48 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg">
-                            {Object.entries(majorBusStops).map(([region, stops]) => (
-                              <div key={region} className="p-2">
-                                <h4 className="font-medium text-sm bg-gray-50 p-1">{region}</h4>
-                                <div className="grid grid-cols-1">
-                                  {stops.map((stop) => (
-                                    <button
-                                      key={stop}
-                                      className="text-left text-sm p-1 hover:bg-blue-50 w-full truncate"
-                                      onClick={() => handleSelectStop(stop, 'start')}
-                                    >
-                                      {stop}
-                                    </button>
-                                  ))}
-                                </div>
+                            {loading ? (
+                              <div className="p-3 text-center">
+                                <div className="animate-spin h-4 w-4 border-2 border-karnataka-blue border-t-transparent rounded-full mb-2 mx-auto"></div>
+                                {isKannada ? "ಬಸ್ ನಿಲ್ದಾಣಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ..." : "Loading bus stops..."}
                               </div>
-                            ))}
+                            ) : Object.entries(busStops).length > 0 ? (
+                              Object.entries(busStops).map(([region, stops]) => (
+                                <div key={region} className="p-2">
+                                  <h4 className="font-medium text-sm bg-gray-50 p-1">{region}</h4>
+                                  <div className="grid grid-cols-1">
+                                    {stops.map((stop) => (
+                                      <button
+                                        key={stop}
+                                        className="text-left text-sm p-1 hover:bg-blue-50 w-full truncate"
+                                        onClick={() => handleSelectStop(stop, 'start')}
+                                      >
+                                        {stop}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="p-3 text-center text-gray-500">
+                                {isKannada ? "ಯಾವುದೇ ಬಸ್ ನಿಲ್ದಾಣಗಳು ಕಂಡುಬಂದಿಲ್ಲ" : "No bus stops found"}
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
@@ -387,22 +375,33 @@ const BmtcPortal = () => {
                         
                         {showBusStopsList && (
                           <div className="absolute z-10 mt-1 w-full max-h-48 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg">
-                            {Object.entries(majorBusStops).map(([region, stops]) => (
-                              <div key={region} className="p-2">
-                                <h4 className="font-medium text-sm bg-gray-50 p-1">{region}</h4>
-                                <div className="grid grid-cols-1">
-                                  {stops.map((stop) => (
-                                    <button
-                                      key={stop}
-                                      className="text-left text-sm p-1 hover:bg-blue-50 w-full truncate"
-                                      onClick={() => handleSelectStop(stop, 'destination')}
-                                    >
-                                      {stop}
-                                    </button>
-                                  ))}
-                                </div>
+                            {loading ? (
+                              <div className="p-3 text-center">
+                                <div className="animate-spin h-4 w-4 border-2 border-karnataka-blue border-t-transparent rounded-full mb-2 mx-auto"></div>
+                                {isKannada ? "ಬಸ್ ನಿಲ್ದಾಣಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ..." : "Loading bus stops..."}
                               </div>
-                            ))}
+                            ) : Object.entries(busStops).length > 0 ? (
+                              Object.entries(busStops).map(([region, stops]) => (
+                                <div key={region} className="p-2">
+                                  <h4 className="font-medium text-sm bg-gray-50 p-1">{region}</h4>
+                                  <div className="grid grid-cols-1">
+                                    {stops.map((stop) => (
+                                      <button
+                                        key={stop}
+                                        className="text-left text-sm p-1 hover:bg-blue-50 w-full truncate"
+                                        onClick={() => handleSelectStop(stop, 'destination')}
+                                      >
+                                        {stop}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="p-3 text-center text-gray-500">
+                                {isKannada ? "ಯಾವುದೇ ಬಸ್ ನಿಲ್ದಾಣಗಳು ಕಂಡುಬಂದಿಲ್ಲ" : "No bus stops found"}
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
@@ -411,8 +410,13 @@ const BmtcPortal = () => {
                     <Button 
                       className="w-full mt-4 bg-karnataka-blue"
                       onClick={handleFindRoutes}
+                      disabled={loading}
                     >
-                      {isKannada ? "ಮಾರ್ಗಗಳನ್ನು ಹುಡುಕಿ" : "Find Routes"}
+                      {loading ? (
+                        <>{isKannada ? "ಲೋಡ್ ಆಗುತ್ತಿದೆ..." : "Loading..."}</>
+                      ) : (
+                        <>{isKannada ? "ಮಾರ್ಗಗಳನ್ನು ಹುಡುಕಿ" : "Find Routes"}</>
+                      )}
                     </Button>
                     
                     {/* Fare Information Popover */}
@@ -513,7 +517,7 @@ const BmtcPortal = () => {
                                 size="sm"
                                 className="w-full mt-2 border-karnataka-blue text-karnataka-blue hover:bg-karnataka-blue/10"
                               >
-                                {isKannada ? "ಟಿಕೆಟ್ ಕಾಯ್ದ���ರಿಸಿ" : "Book Ticket"}
+                                {isKannada ? "ಟಿಕೆಟ್ ಕಾಯ್ದಿರಿಸಿ" : "Book Ticket"}
                               </Button>
                             </div>
                           ))}

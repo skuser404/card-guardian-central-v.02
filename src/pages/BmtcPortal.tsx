@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -6,8 +5,9 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { BusFront, Map, Route, Navigation, CircleDot, FileText, User, Users } from "lucide-react";
+import { BusFront, Map, Route, Navigation, CircleDot, FileText, User, Users, InfoIcon } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const BmtcPortal = () => {
   const navigate = useNavigate();
@@ -16,6 +16,158 @@ const BmtcPortal = () => {
   const [destination, setDestination] = useState("");
   const [searchResults, setSearchResults] = useState<BusRoute[] | null>(null);
   const [isKannada, setIsKannada] = useState(false);
+  const [showBusStopsList, setShowBusStopsList] = useState(false);
+  
+  // BMTC Bus Terminals and Stops Data
+  const majorBusStops = {
+    "Major Bus Terminals": [
+      "Kempegowda Bus Station (Majestic)",
+      "Shivajinagar Bus Station",
+      "K.R. Market Bus Station",
+      "Banashankari TTMC",
+      "Domlur TTMC",
+      "Jayanagar TTMC",
+      "Koramangala TTMC",
+      "Yeshwanthpur TTMC",
+      "Shantinagar Bus Station",
+      "Vijayanagar TTMC",
+      "Whitefield TTMC",
+      "Bannerghatta Bus Station",
+      "Peenya TTMC",
+      "ITPL Bus Station",
+      "Electronic City Bus Station"
+    ],
+    "North Bangalore": [
+      "Yelahanka Bus Stop",
+      "Yelahanka Old Town",
+      "Yelahanka New Town",
+      "Jakkur",
+      "Byatarayanapura",
+      "Kogilu Cross",
+      "Vidyaranyapura",
+      "Allalasandra",
+      "GKVK",
+      "Hebbal Bus Stop",
+      "Hebbal Flyover",
+      "Mekri Circle",
+      "CBI Hebbal Ring Road",
+      "Esteem Mall",
+      "Kempapura"
+    ],
+    "Airport Route": [
+      "Kempegowda International Airport",
+      "Airport Terminal",
+      "Devanahalli",
+      "Yelahanka Airforce Station",
+      "Sadahalli Gate",
+      "Chikkajala"
+    ],
+    "East Bangalore": [
+      "Indira Nagar",
+      "Thippasandra",
+      "100 Feet Road",
+      "HAL Market",
+      "HAL Airport",
+      "Domlur",
+      "KR Puram Bus Stand",
+      "KR Puram Railway Station",
+      "Horamavu",
+      "Banaswadi",
+      "Ramamurthy Nagar",
+      "Baiyappanahalli",
+      "Mahadevapura",
+      "ITPL",
+      "Marathahalli",
+      "Kundalahalli",
+      "Varthur"
+    ],
+    "Central Bangalore": [
+      "Malleswaram Circle",
+      "Malleswaram 8th Cross",
+      "Sadashivanagar",
+      "Bhashyam Circle",
+      "MG Road",
+      "Trinity Circle",
+      "Ulsoor",
+      "Cubbon Park",
+      "High Court",
+      "Commercial Street",
+      "Brigade Road",
+      "Residency Road"
+    ],
+    "South Bangalore": [
+      "Jayanagar 4th Block",
+      "Jayanagar Bus Stand",
+      "South End Circle",
+      "Tilak Nagar",
+      "Banashankari Stage I",
+      "Banashankari Stage II",
+      "Basavanagudi",
+      "Gandhi Bazaar",
+      "National College",
+      "BTM Layout",
+      "Silk Board",
+      "JP Nagar",
+      "HSR Layout",
+      "Bellandur",
+      "Madiwala",
+      "Koramangala"
+    ],
+    "West Bangalore": [
+      "Rajajinagar 1st Block",
+      "Dr. Rajkumar Road",
+      "Basaveshwara Nagar",
+      "Mahalakshmi Layout",
+      "Yeshwanthpur Bus Station",
+      "Yeshwanthpur Railway Station",
+      "Goraguntepalya",
+      "Peenya",
+      "Jalahalli",
+      "Mathikere"
+    ],
+    "Electronic City Area": [
+      "Electronic City Phase 1",
+      "Electronic City Phase 2",
+      "Neeladri Road",
+      "Hosa Road",
+      "Kudlu Gate",
+      "Bommanahalli",
+      "Singasandra"
+    ],
+    "Whitefield Area": [
+      "Whitefield",
+      "ITPL Main Gate",
+      "Hope Farm",
+      "Varthur Kodi",
+      "Kundanahalli Gate",
+      "Graphite India",
+      "EPIP Zone",
+      "Hoodi Circle"
+    ]
+  };
+  
+  // BMTC Fare Information
+  const fareInfo = {
+    title: "How BMTC Calculates Bus Fares",
+    sections: [
+      {
+        heading: "Stage-Based System",
+        content: "BMTC uses a stage-based fare calculation system where each \"stage\" represents approximately 2 kilometers of travel distance. Your fare is calculated based on how many stages you travel through from your origin to destination."
+      },
+      {
+        heading: "Distance Slabs",
+        content: "The fare is structured in distance slabs with specific rates for different distance ranges:\n- Stage 1 (0-2 km): ₹6\n- Stage 2 (2-4 km): ₹12\n- Stage 3 (4-6 km): ₹18\n- Stage 4 (6-8 km): ₹23\n\nAnd so on, with increasing prices for longer distances. The maximum fare for regular buses is ₹32 for routes above 25 stages."
+      },
+      {
+        heading: "Different Fare Categories",
+        content: "- Adult: Full fare\n- Child: 50% of adult fare\n- Senior Citizens: Approximately 75-80% of adult fare"
+      },
+      {
+        heading: "Bus Type Variation",
+        content: "Different types of buses have different fare structures:\n- Ordinary/Regular buses: Base fare\n- AC/Vajra buses: Higher fare structure (for example, the minimum fare starts at ₹10 instead of ₹6)"
+      }
+    ]
+  };
   
   const recentRoutes = [
     { id: 1, name: "Majestic to Whitefield", nameKn: "ಮೆಜೆಸ್ಟಿಕ್‌ನಿಂದ ವೈಟ್‌ಫೀಲ್ಡ್", number: "500D", frequency: "10 mins", fare: "₹30", isAC: false, plateNumber: "KA-01-F-1234" },
@@ -115,10 +267,20 @@ const BmtcPortal = () => {
     }
   };
   
+  // Function to select a stop from the suggestion list
+  const handleSelectStop = (stop: string, type: 'start' | 'destination') => {
+    if (type === 'start') {
+      setStartPoint(stop);
+    } else {
+      setDestination(stop);
+    }
+    setShowBusStopsList(false);
+  };
+  
   return (
     <div className="min-h-screen relative">
       <div className="container max-w-4xl mx-auto px-4 py-6">
-        <Header isKannada={isKannada} onLanguageChange={handleLanguageChange} />
+        <Header isKannada={isKannada} onLanguageChange={handleLanguageChange} showLogout={true} />
         
         <main className="my-6">
           <div className="flex items-center gap-2 mb-4">
@@ -161,27 +323,125 @@ const BmtcPortal = () => {
                       }
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <input
-                        type="text"
-                        placeholder={isKannada ? "ಪ್ರಾರಂಭ ಬಿಂದು" : "Starting Point"}
-                        className="border rounded-md p-2 w-full"
-                        value={startPoint}
-                        onChange={(e) => setStartPoint(e.target.value)}
-                      />
-                      <input
-                        type="text"
-                        placeholder={isKannada ? "ಗಮ್ಯಸ್ಥಾನ" : "Destination"}
-                        className="border rounded-md p-2 w-full"
-                        value={destination}
-                        onChange={(e) => setDestination(e.target.value)}
-                      />
+                      <div className="relative">
+                        <div className="flex items-center">
+                          <input
+                            type="text"
+                            placeholder={isKannada ? "ಪ್ರಾರಂಭ ಬಿಂದು" : "Starting Point"}
+                            className="border rounded-md p-2 w-full"
+                            value={startPoint}
+                            onChange={(e) => setStartPoint(e.target.value)}
+                            onFocus={() => setShowBusStopsList(true)}
+                          />
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => setShowBusStopsList(!showBusStopsList)}
+                            className="ml-1"
+                          >
+                            <InfoIcon className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        
+                        {showBusStopsList && (
+                          <div className="absolute z-10 mt-1 w-full max-h-48 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg">
+                            {Object.entries(majorBusStops).map(([region, stops]) => (
+                              <div key={region} className="p-2">
+                                <h4 className="font-medium text-sm bg-gray-50 p-1">{region}</h4>
+                                <div className="grid grid-cols-1">
+                                  {stops.map((stop) => (
+                                    <button
+                                      key={stop}
+                                      className="text-left text-sm p-1 hover:bg-blue-50 w-full truncate"
+                                      onClick={() => handleSelectStop(stop, 'start')}
+                                    >
+                                      {stop}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="relative">
+                        <div className="flex items-center">
+                          <input
+                            type="text"
+                            placeholder={isKannada ? "ಗಮ್ಯಸ್ಥಾನ" : "Destination"}
+                            className="border rounded-md p-2 w-full"
+                            value={destination}
+                            onChange={(e) => setDestination(e.target.value)}
+                            onFocus={() => setShowBusStopsList(true)}
+                          />
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => setShowBusStopsList(!showBusStopsList)}
+                            className="ml-1"
+                          >
+                            <InfoIcon className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        
+                        {showBusStopsList && (
+                          <div className="absolute z-10 mt-1 w-full max-h-48 overflow-y-auto bg-white border border-gray-200 rounded-md shadow-lg">
+                            {Object.entries(majorBusStops).map(([region, stops]) => (
+                              <div key={region} className="p-2">
+                                <h4 className="font-medium text-sm bg-gray-50 p-1">{region}</h4>
+                                <div className="grid grid-cols-1">
+                                  {stops.map((stop) => (
+                                    <button
+                                      key={stop}
+                                      className="text-left text-sm p-1 hover:bg-blue-50 w-full truncate"
+                                      onClick={() => handleSelectStop(stop, 'destination')}
+                                    >
+                                      {stop}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
+                    
                     <Button 
                       className="w-full mt-4 bg-karnataka-blue"
                       onClick={handleFindRoutes}
                     >
                       {isKannada ? "ಮಾರ್ಗಗಳನ್ನು ಹುಡುಕಿ" : "Find Routes"}
                     </Button>
+                    
+                    {/* Fare Information Popover */}
+                    <div className="mt-4 flex justify-center">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            {isKannada ? "ಬಸ್ ದರ ಮಾಹಿತಿ" : "Bus Fare Information"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80 max-h-80 overflow-y-auto" align="center">
+                          <h3 className="font-bold text-lg mb-2">{fareInfo.title}</h3>
+                          <div className="space-y-3">
+                            {fareInfo.sections.map((section, index) => (
+                              <div key={index}>
+                                <h4 className="font-medium">{section.heading}</h4>
+                                <p className="text-sm whitespace-pre-line">{section.content}</p>
+                              </div>
+                            ))}
+                            <p className="text-xs text-gray-500 italic mt-2">
+                              {isKannada 
+                                ? "ನವೀಕರಿಸಿದ ದರಗಳು: ಜನವರಿ 2025"
+                                : "Fares updated: January 2025"
+                              }
+                            </p>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                     
                     {searchResults !== null && (
                       <div className="mt-6">
@@ -253,7 +513,7 @@ const BmtcPortal = () => {
                                 size="sm"
                                 className="w-full mt-2 border-karnataka-blue text-karnataka-blue hover:bg-karnataka-blue/10"
                               >
-                                {isKannada ? "ಟಿಕೆಟ್ ಕಾಯ್ದಿರಿಸಿ" : "Book Ticket"}
+                                {isKannada ? "ಟಿಕೆಟ್ ಕಾಯ್ದ���ರಿಸಿ" : "Book Ticket"}
                               </Button>
                             </div>
                           ))}
@@ -371,7 +631,7 @@ const BmtcPortal = () => {
                       <div className="glassmorphism p-4 rounded-lg">
                         <h4 className="font-medium mb-2">{isKannada ? "ಅರ್ಜಿ ವಿಧಾನಗಳು" : "Application Methods"}</h4>
                         <ul className="list-disc list-inside space-y-1 text-sm">
-                          <li>{isKannada ? "ಸೇವಾ ಸಿಂಧು ಪೋರ್ಟಲ್ ಮೂಲಕ ಆನ್‌ಲೈನ್" : "Online through Seva Sindhu portal"}</li>
+                          <li>{isKannada ? "ಸೇವಾ ಸಿಂಧು ಪೋರ್ಟಲ್ ಮೂಲಕ ಆನ್‌ಲೈ��್" : "Online through Seva Sindhu portal"}</li>
                           <li>{isKannada ? "ಬೆಂಗಳೂರು ವನ್ ಕೇಂದ್ರಗಳಲ್ಲಿ" : "At BangaloreOne centers"}</li>
                           <li>{isKannada ? "ಶೈಕ್ಷಣಿಕ ಸಂಸ್ಥೆಗಳ ಮೂಲಕ" : "Through educational institutions"}</li>
                         </ul>
@@ -404,7 +664,7 @@ const BmtcPortal = () => {
                           <div>
                             <h5 className="text-sm font-medium">{isKannada ? "ಬೆಂಗಳೂರು ವನ್ ಕೇಂದ್ರಗಳಲ್ಲಿ ಅರ್ಜಿ" : "Application at BangaloreOne Centers"}</h5>
                             <ol className="list-decimal list-inside space-y-1 text-sm ml-2">
-                              <li>{isKannada ? "ಅಗತ್ಯ ದಾಖಲೆಗಳೊಂದಿಗೆ ಯಾವುದೇ ಬೆಂಗಳೂರು ವನ್ ಕೇಂದ್ರಕ್ಕೆ ಭೇಟಿ ನೀಡಿ" : "Visit any BangaloreOne center with required documents"}</li>
+                              <li>{isKannada ? "ಅಗತ್ಯ ದಾಖಲೆಗಳನ್ನು ಯಾವುದೇ ಬೆಂಗಳೂರು ವನ್ ಕೇಂದ್ರಕ್ಕೆ ಭೇಟಿ ನೀಡಿ" : "Visit any BangaloreOne center with required documents"}</li>
                               <li>{isKannada ? "ಅಪ್ಲಿಕೇಶನ್ ಫಾರ್ಮ್ ಭರ್ತಿ ಮಾಡಿ" : "Fill application form"}</li>
                               <li>{isKannada ? "₹30 ಸೇವಾ ಶುಲ್ಕವನ್ನು ಪಾವತಿಸಿ" : "Pay service charge of Rs. 30"}</li>
                               <li>{isKannada ? "ಅಪ್ಲಿಕೇಶನ್ ಸಲ್ಲಿಸಿ" : "Submit application"}</li>
@@ -508,4 +768,3 @@ const BmtcPortal = () => {
 };
 
 export default BmtcPortal;
-

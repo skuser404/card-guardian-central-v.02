@@ -191,7 +191,7 @@ const TransportCard = ({
                 variant="ghost" 
                 size="sm"
                 onClick={() => showBalance ? setShowBalance(false) : handleViewBalance()}
-                className="flex items-center gap-1 h-6 p-0 text-white hover:text-white hover:bg-white/20"
+                className="flex items-center gap-1 p-0 h-6 text-white hover:text-white hover:bg-white/20"
               >
                 {showBalance ? (
                   <EyeOff size={14} />

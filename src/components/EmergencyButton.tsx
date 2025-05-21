@@ -10,6 +10,7 @@ interface EmergencyButtonProps {
 
 const EmergencyButton: React.FC<EmergencyButtonProps> = ({ isKannada = false }) => {
   const handleEmergencyCall = () => {
+    // Show toast notification
     toast({
       title: isKannada ? "ತುರ್ತು ಕರೆ ಮಾಡಲಾಗುತ್ತಿದೆ" : "Emergency Call Initiated",
       description: isKannada 
@@ -17,6 +18,9 @@ const EmergencyButton: React.FC<EmergencyButtonProps> = ({ isKannada = false }) 
         : "Emergency services will contact you shortly",
       variant: "destructive",
     });
+    
+    // In a real application, this would initiate an actual emergency call
+    console.log("Emergency call initiated");
   };
 
   return (

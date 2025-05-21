@@ -22,6 +22,7 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import ParticleBackground from "@/components/ParticleBackground";
+import EmergencyButton from "@/components/EmergencyButton";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -87,7 +88,7 @@ const Index = () => {
                 </CardHeader>
                 <CardContent>
                   {isKannada
-                    ? "ಬೆಂಗಳೂರಿನ ಮೆಟ್ರೋ ರೈಲುಗಳ ಬಗ್ಗೆ ನವೀಕರಣಗಳು ಮತ್ತು ವೇಳಾಪಟ್ಟಿಗಳನ್ನು ಪಡೆಯಿರಿ."
+                    ? "ಬೆಂಗಳೂರಿನ ಮೆಟ್ರೋ ರೈಲುಗಳ ಬಗ್ಗೆ ನವೀಕರणಗಳು ಮತ್ತು ವೇಳಾಪಟ್ಟಿಗಳನ್ನು ಪಡೆಯಿರಿ."
                     : "Get updates and schedules for Bangalore's metro trains."}
                 </CardContent>
               </Card>
@@ -159,9 +160,7 @@ const Index = () => {
       
       {/* Emergency Button */}
       <div className="fixed bottom-4 right-4 z-50">
-        <Button variant="destructive" className="shadow-lg">
-          {isKannada ? "ತುರ್ತು" : "Emergency"}
-        </Button>
+        <EmergencyButton />
       </div>
     </div>
   );

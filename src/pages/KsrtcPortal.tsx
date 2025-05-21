@@ -6,6 +6,9 @@ import KsrtcBusTracker from "@/components/KsrtcBusTracker";
 import EmergencyButton from "@/components/EmergencyButton";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertTriangle, Phone } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 
 const KsrtcPortal = () => {
   const navigate = useNavigate();
@@ -13,6 +16,16 @@ const KsrtcPortal = () => {
 
   const handleLanguageChange = (value: boolean) => {
     setIsKannada(value);
+  };
+
+  const handleEmergencyCall = () => {
+    toast({
+      title: isKannada ? "ತುರ್ತು ಕರೆ ಮಾಡಲಾಗುತ್ತಿದೆ" : "Emergency Call Initiated",
+      description: isKannada 
+        ? "ತುರ್ತು ಸೇವೆಗಳು ಶೀಘ್ರದಲ್ಲೇ ನಿಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸುತ್ತವೆ" 
+        : "Emergency services will contact you shortly",
+      variant: "destructive",
+    });
   };
 
   return (
@@ -41,12 +54,29 @@ const KsrtcPortal = () => {
             </div>
             
             <div className="space-y-6">
-              <div className="bg-white border rounded-lg p-4">
-                <h3 className="text-lg font-medium mb-2 text-karnataka-red">
-                  {isKannada ? "ತುರ್ತು ಸಹಾಯ" : "Emergency Assistance"}
-                </h3>
-                <EmergencyButton />
-              </div>
+              <Card className="bg-white border border-red-200">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg font-medium text-karnataka-red flex items-center">
+                    <AlertTriangle className="h-5 w-5 mr-2 text-red-500" />
+                    {isKannada ? "ತುರ್ತು ಸಹಾಯ" : "Emergency Assistance"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm mb-4">
+                    {isKannada 
+                      ? "ತುರ್ತು ಸಂದರ್ಭದಲ್ಲಿ, ಈ ಕೆಳಗಿನ ಬಟನ್ ಅನ್ನು ಒತ್ತಿ"
+                      : "In case of emergency, press the button below"}
+                  </p>
+                  <Button 
+                    variant="destructive" 
+                    className="w-full flex items-center justify-center gap-2"
+                    onClick={handleEmergencyCall}
+                  >
+                    <Phone className="h-4 w-4" />
+                    {isKannada ? "ತುರ್ತು ಸಹಾಯ" : "Emergency Help"}
+                  </Button>
+                </CardContent>
+              </Card>
               
               <div className="bg-white border rounded-lg p-4">
                 <h3 className="text-lg font-medium mb-2 text-karnataka-red">

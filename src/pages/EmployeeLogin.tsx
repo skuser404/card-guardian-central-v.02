@@ -33,7 +33,22 @@ const EmployeeLogin = () => {
     setIsLoading(true);
 
     try {
-      // Login with email and password
+      // Special case for the predefined user
+      if (email === "sk9030973224@gmail.com" && password === "admin001" && employeeId === "EMP001") {
+        // Create a temporary session
+        toast({
+          title: isKannada ? "ಯಶಸ್ವಿ ಲಾಗಿನ್!" : "Login successful!",
+          description: isKannada 
+            ? "ನಿಮ್ಮ ಉದ್ಯೋಗಿ ಪೋರ್ಟಲ್‌ಗೆ ಸ್ವಾಗತ." 
+            : "Welcome to your employee portal.",
+        });
+        
+        // Navigate to employee dashboard
+        navigate("/employee-portal");
+        return;
+      }
+      
+      // Regular login with email and password
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -90,13 +105,6 @@ const EmployeeLogin = () => {
       // Temporary admin credentials check
       if (email === "admin" && password === "admin") {
         // Create a temporary session
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: "admin@karnataka-transport.gov.in",
-          password: "admin123"
-        });
-        
-        if (error) throw error;
-
         toast({
           title: isKannada ? "ಯಶಸ್ವಿ ಲಾಗಿನ್!" : "Admin Login successful!",
           description: isKannada 
@@ -230,6 +238,9 @@ const EmployeeLogin = () => {
                       ? "ಉದ್ಯೋಗಿಯಾಗಿ ನೋಂದಾಯಿಸಲು, ದಯವಿಟ್ಟು ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ"
                       : "To register as an employee, please contact your administrator"
                     }
+                  </p>
+                  <p className="w-full mt-2 text-gray-500">
+                    Demo: EMP001 / sk9030973224@gmail.com / admin001
                   </p>
                 </CardFooter>
               </Card>

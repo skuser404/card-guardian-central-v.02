@@ -22,9 +22,13 @@ interface BusInfo {
 
 interface BusTrackerProps {
   isKannada: boolean;
+  onBusSelect?: (busId: string) => void;
 }
 
-const KsrtcBusTracker: React.FC<BusTrackerProps> = ({ isKannada }) => {
+const KsrtcBusTracker: React.FC<BusTrackerProps> = ({ 
+  isKannada,
+  onBusSelect 
+}) => {
   const [loading, setLoading] = useState(true);
   const [busStops, setBusStops] = useState<BusStop[]>([]);
   const [selectedStop, setSelectedStop] = useState<string | null>(null);
@@ -79,6 +83,12 @@ const KsrtcBusTracker: React.FC<BusTrackerProps> = ({ isKannada }) => {
     } catch (error) {
       console.error("Error searching for buses:", error);
       setIsSearching(false);
+    }
+  };
+
+  const handleBusClick = (bus: BusInfo) => {
+    if (onBusSelect) {
+      onBusSelect(bus.id);
     }
   };
 
@@ -143,7 +153,11 @@ const KsrtcBusTracker: React.FC<BusTrackerProps> = ({ isKannada }) => {
             </h3>
             <div className="space-y-3">
               {availableBuses.map(bus => (
-                <div key={bus.id} className="flex items-center p-3 border rounded-lg hover:bg-gray-50">
+                <div 
+                  key={bus.id} 
+                  className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                  onClick={() => handleBusClick(bus)}
+                >
                   <div className="h-10 w-10 rounded-full bg-karnataka-red/10 flex items-center justify-center mr-3">
                     <Bus className="h-6 w-6 text-karnataka-red" />
                   </div>

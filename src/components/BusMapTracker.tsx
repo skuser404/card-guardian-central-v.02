@@ -4,27 +4,38 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, Users, Clock, CalendarClock, Bus } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 // Sample bus routes data
 const busRoutes = [
   {
     id: "route-1",
     busNumber: "KA-01-F-1234",
+    capacity: 36,
+    seatsFilled: 22,
+    type: "AC Sleeper",
+    category: "Express",
     stops: [
       { name: "Majestic", time: "08:00", coordinates: [77.5732, 12.9766] },
       { name: "Silk Board", time: "08:45", coordinates: [77.6226, 12.9173] },
       { name: "Electronic City", time: "09:30", coordinates: [77.6702, 12.8455] }
-    ]
+    ],
+    travelGuide: "Student discount available with valid ID."
   },
   {
     id: "route-2",
     busNumber: "KA-01-F-5678",
+    capacity: 42,
+    seatsFilled: 28,
+    type: "Non-AC Seater",
+    category: "Ordinary",
     stops: [
       { name: "Majestic", time: "09:15", coordinates: [77.5732, 12.9766] },
       { name: "Hebbal", time: "10:00", coordinates: [77.5952, 13.0355] },
       { name: "Airport", time: "10:45", coordinates: [77.7085, 13.1989] }
-    ]
+    ],
+    travelGuide: "Government employee concession available."
   }
 ];
 
@@ -196,6 +207,33 @@ const BusMapTracker: React.FC<BusMapTrackerProps> = ({
     });
   };
 
+  // Calculate estimated time function
+  const calculateEstimatedTime = (stops: any[]) => {
+    if (!stops || stops.length < 2) return "N/A";
+    
+    // Get first and last stop times
+    const firstTimeStr = stops[0].time;
+    const lastTimeStr = stops[stops.length - 1].time;
+    
+    // Parse times (assuming HH:MM format)
+    const [firstHours, firstMinutes] = firstTimeStr.split(":").map(Number);
+    const [lastHours, lastMinutes] = lastTimeStr.split(":").map(Number);
+    
+    // Calculate total minutes
+    const firstTotalMinutes = firstHours * 60 + firstMinutes;
+    const lastTotalMinutes = lastHours * 60 + lastMinutes;
+    
+    // Calculate difference in minutes
+    let diffMinutes = lastTotalMinutes - firstTotalMinutes;
+    if (diffMinutes < 0) diffMinutes += 24 * 60; // Handle day crossing
+    
+    // Format result
+    const hours = Math.floor(diffMinutes / 60);
+    const minutes = diffMinutes % 60;
+    
+    return `${hours}h ${minutes}m`;
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -216,11 +254,38 @@ const BusMapTracker: React.FC<BusMapTrackerProps> = ({
             />
             
             {selectedRoute && (
-              <div className="mt-4 border rounded-lg p-3 bg-gray-50">
-                <h3 className="font-medium">
-                  {isKannada ? "ಬಸ್ ಮಾರ್ಗ" : "Bus Route"}: {selectedRoute.busNumber}
-                </h3>
-                <div className="mt-2 space-y-1">
+              <div className="mt-4 border rounded-lg p-4 bg-gray-50">
+                <div className="flex flex-wrap justify-between items-center mb-4">
+                  <h3 className="font-medium text-lg flex items-center">
+                    <Bus className="h-5 w-5 mr-2 text-karnataka-red" />
+                    {selectedRoute.busNumber}
+                    <Badge className="ml-2 bg-karnataka-blue">{selectedRoute.category}</Badge>
+                  </h3>
+                  <div className="flex flex-col sm:flex-row sm:gap-4">
+                    <div className="flex items-center text-gray-700">
+                      <Users className="h-4 w-4 mr-1 text-karnataka-blue" />
+                      <span>{isKannada ? "ಸಾಮರ್ಥ್ಯ:" : "Capacity:"} {selectedRoute.seatsFilled}/{selectedRoute.capacity}</span>
+                    </div>
+                    <div className="flex items-center text-gray-700">
+                      <Clock className="h-4 w-4 mr-1 text-karnataka-blue" />
+                      <span>{isKannada ? "ಯಾತ್ರಾ ಸಮಯ:" : "Travel time:"} {calculateEstimatedTime(selectedRoute.stops)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium mb-1 text-karnataka-blue">
+                    {isKannada ? "ಪ್ರಯಾಣಿಕರ ಮಾರ್ಗದರ್ಶಿ" : "Traveler Guide"}
+                  </h4>
+                  <p className="text-sm bg-yellow-50 p-2 rounded border border-yellow-100">
+                    {selectedRoute.travelGuide || (isKannada ? "ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ" : "No travel information available")}
+                  </p>
+                </div>
+
+                <h4 className="text-sm font-medium mb-2 text-karnataka-blue">
+                  {isKannada ? "ಬಸ್ ಮಾರ್ಗ" : "Bus Route"}
+                </h4>
+                <div className="space-y-1">
                   {selectedRoute.stops.map((stop: any, index: number) => (
                     <div key={index} className="flex items-center">
                       <div className="w-5 h-5 rounded-full bg-karnataka-red text-white flex items-center justify-center text-xs mr-2">

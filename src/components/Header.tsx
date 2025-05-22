@@ -55,14 +55,11 @@ const Header = ({ isKannada: propIsKannada, onLanguageChange, showLogout = false
   return (
     <header className="w-full glassmorphism p-4 flex items-center justify-between mb-6 rounded-lg">
       <div className="flex items-center gap-2">
-        <div className="h-10 w-10 bg-karnataka-blue rounded-full flex items-center justify-center overflow-hidden">
+        <div className="h-12 w-12 rounded-full flex items-center justify-center overflow-hidden">
           <img 
-            src="/ksrtc_logo.png" 
+            src="/lovable-uploads/20ccb459-33c7-4026-9c18-1e3d3362e49f.png" 
             alt={isKannada ? "ಕೆಎಸ್ಆರ್ಟಿಸಿ ಲೋಗೋ" : "KSRTC Logo"} 
             className="h-12 w-12 object-contain" 
-            onError={(e) => {
-              e.currentTarget.src = "https://ksrtc.karnataka.gov.in/frontend/KSRTC%20LOGO.png";
-            }}
           />
         </div>
         <div>

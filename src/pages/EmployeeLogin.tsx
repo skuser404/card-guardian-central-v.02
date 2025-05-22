@@ -9,14 +9,17 @@ import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { AlertTriangle, Loader2 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const EmployeeLogin = () => {
   const navigate = useNavigate();
   const [isKannada, setIsKannada] = useState(false);
-  const [employeeId, setEmployeeId] = useState("EMP001");
-  const [password, setPassword] = useState("admin001");
-  const [email, setEmail] = useState("sk9030973224@gmail.com");
+  const [employeeId, setEmployeeId] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Sample data comment - These accounts are available for testing:
   // Regular Employee: Email: sk9030973224@gmail.com, ID: EMP001, Password: admin001
@@ -138,13 +141,26 @@ const EmployeeLogin = () => {
     
     // Call the function to add sample data
     addSampleData();
+    
+    // Pre-fill with test credentials for easier testing
+    setEmail("sk9030973224@gmail.com");
+    setEmployeeId("EMP001");
+    setPassword("admin001");
   }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
     try {
+      // Validate inputs
+      if (!email.trim() || !employeeId.trim() || !password.trim()) {
+        throw new Error(isKannada 
+          ? "ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ" 
+          : "Please fill in all fields");
+      }
+
       let loginResult;
 
       if (email === "admin" && password === "admin") {
@@ -175,6 +191,10 @@ const EmployeeLogin = () => {
       navigate('/employee-portal');
     } catch (error: any) {
       console.error("Login error:", error);
+      setError(error.message || (isKannada 
+        ? "ಲಾಗ್ಇನ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ, ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ" 
+        : "Failed to login, please check your credentials and try again"));
+      
       toast({
         variant: "destructive",
         title: isKannada ? "ಲಾಗ್ಇನ್ ವಿಫಲವಾಗಿದೆ" : "Login Failed",
@@ -205,6 +225,14 @@ const EmployeeLogin = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {error && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>{isKannada ? "ದೋಷ" : "Error"}</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">
@@ -255,10 +283,7 @@ const EmployeeLogin = () => {
                 >
                   {loading ? (
                     <span className="flex items-center">
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
+                      <Loader2 className="animate-spin mr-2 h-4 w-4" />
                       {isKannada ? "ಲಾಗಿನ್ ಆಗುತ್ತಿದೆ..." : "Logging in..."}
                     </span>
                   ) : (

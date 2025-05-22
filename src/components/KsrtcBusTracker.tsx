@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { MapPin, Bus } from "lucide-react";
+import { MapPin, Bus, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface BusStop {
@@ -18,6 +18,7 @@ interface BusInfo {
   type: string;
   route: string;
   status: string;
+  capacity: number;
 }
 
 interface BusTrackerProps {
@@ -31,7 +32,8 @@ const KsrtcBusTracker: React.FC<BusTrackerProps> = ({
 }) => {
   const [loading, setLoading] = useState(true);
   const [busStops, setBusStops] = useState<BusStop[]>([]);
-  const [selectedStop, setSelectedStop] = useState<string | null>(null);
+  const [selectedStartStop, setSelectedStartStop] = useState<string | null>(null);
+  const [selectedDestStop, setSelectedDestStop] = useState<string | null>(null);
   const [availableBuses, setAvailableBuses] = useState<BusInfo[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
@@ -59,7 +61,7 @@ const KsrtcBusTracker: React.FC<BusTrackerProps> = ({
   }, []);
 
   const handleSearch = async () => {
-    if (!selectedStop) return;
+    if (!selectedStartStop || !selectedDestStop) return;
     
     setIsSearching(true);
     
@@ -115,11 +117,29 @@ const KsrtcBusTracker: React.FC<BusTrackerProps> = ({
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <label className="text-sm font-medium">
-            {isKannada ? "ಬಸ್ ನಿಲ್ದಾಣವನ್ನು ಆಯ್ಕೆಮಾಡಿ" : "Select Bus Stop"}
+            {isKannada ? "ಪ್ರಾರಂಭ ಸ್ಥಳ" : "Starting Point"}
           </label>
-          <Select onValueChange={setSelectedStop}>
+          <Select onValueChange={setSelectedStartStop}>
             <SelectTrigger>
-              <SelectValue placeholder={isKannada ? "ನಿಲ್ದಾಣವನ್ನು ಆಯ್ಕೆಮಾಡಿ" : "Select a stop"} />
+              <SelectValue placeholder={isKannada ? "ನಿಲ್ದಾಣವನ್ನು ಆಯ್ಕೆಮಾಡಿ" : "Select starting point"} />
+            </SelectTrigger>
+            <SelectContent>
+              {busStops.map(stop => (
+                <SelectItem key={stop.id} value={stop.id}>
+                  {stop.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">
+            {isKannada ? "ಗಮ್ಯಸ್ಥಾನ" : "Destination"}
+          </label>
+          <Select onValueChange={setSelectedDestStop}>
+            <SelectTrigger>
+              <SelectValue placeholder={isKannada ? "ಗಮ್ಯಸ್ಥಾನವನ್ನು ಆಯ್ಕೆಮಾಡಿ" : "Select destination"} />
             </SelectTrigger>
             <SelectContent>
               {busStops.map(stop => (
@@ -133,7 +153,7 @@ const KsrtcBusTracker: React.FC<BusTrackerProps> = ({
 
         <Button 
           onClick={handleSearch}
-          disabled={!selectedStop || isSearching}
+          disabled={!selectedStartStop || !selectedDestStop || isSearching}
           className="w-full bg-karnataka-red hover:bg-karnataka-red/90"
         >
           {isSearching ? (
@@ -161,11 +181,15 @@ const KsrtcBusTracker: React.FC<BusTrackerProps> = ({
                   <div className="h-10 w-10 rounded-full bg-karnataka-red/10 flex items-center justify-center mr-3">
                     <Bus className="h-6 w-6 text-karnataka-red" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <p className="font-medium">{bus.bus_number}</p>
                     <div className="flex items-center text-sm text-gray-500">
                       <MapPin className="h-3 w-3 mr-1" />
                       <span>{bus.route || (isKannada ? "ಮಾರ್ಗ ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ" : "Route info not available")}</span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-500 mt-1">
+                      <Users className="h-3 w-3 mr-1" />
+                      <span>{isKannada ? "ಸಾಮರ್ಥ್ಯ:" : "Capacity:"} {bus.capacity} {isKannada ? "ಪ್ರಯಾಣಿಕರು" : "passengers"}</span>
                     </div>
                   </div>
                   <div className="ml-auto">

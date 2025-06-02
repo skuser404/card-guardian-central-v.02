@@ -57,7 +57,7 @@ const Header = ({ isKannada: propIsKannada, onLanguageChange, showLogout = false
       <div className="flex items-center gap-2">
         <div className="h-12 w-12 rounded-full flex items-center justify-center overflow-hidden">
           <img 
-            src="/lovable-uploads/20ccb459-33c7-4026-9c18-1e3d3362e49f.png" 
+            src="/lovable-uploads/b7b0f34d-bb56-4f0e-8a16-e71b81a19fef.png" 
             alt={isKannada ? "ಕೆಎಸ್ಆರ್ಟಿಸಿ ಲೋಗೋ" : "KSRTC Logo"} 
             className="h-12 w-12 object-contain" 
           />

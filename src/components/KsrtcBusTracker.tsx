@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { MapPin, Bus, Users } from "lucide-react";
+import { MapPin, Bus, Users, Navigation } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface BusStop {
@@ -91,6 +91,30 @@ const KsrtcBusTracker: React.FC<BusTrackerProps> = ({
   const handleBusClick = (bus: BusInfo) => {
     if (onBusSelect) {
       onBusSelect(bus.id);
+    }
+  };
+
+  const handleTrackBus = (bus: BusInfo) => {
+    if (onBusSelect) {
+      onBusSelect(bus.id);
+    }
+    // Switch to map tab
+    const mapTab = document.querySelector('[value="map"]') as HTMLElement;
+    if (mapTab) {
+      mapTab.click();
+    }
+  };
+
+  const getBusStatusColor = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'bg-green-500';
+      case 'delayed':
+        return 'bg-yellow-500';
+      case 'inactive':
+        return 'bg-red-500';
+      default:
+        return 'bg-gray-500';
     }
   };
 
@@ -182,15 +206,26 @@ const KsrtcBusTracker: React.FC<BusTrackerProps> = ({
                     <Bus className="h-6 w-6 text-karnataka-red" />
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium">{bus.bus_number}</p>
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-medium">{bus.bus_number}</p>
+                      <div className={`w-3 h-3 rounded-full ${getBusStatusColor(bus.status)}`}></div>
+                    </div>
                     <div className="flex items-center text-sm text-gray-500">
                       <MapPin className="h-3 w-3 mr-1" />
                       <span>{bus.route || (isKannada ? "ಮಾರ್ಗ ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ" : "Route info not available")}</span>
                     </div>
-                    <div className="flex items-center text-sm text-gray-500 mt-1">
-                      <Users className="h-3 w-3 mr-1" />
-                      <span>{isKannada ? "ಸಾಮರ್ಥ್ಯ:" : "Capacity:"} {bus.capacity} {isKannada ? "ಪ್ರಯಾಣಿಕರು" : "passengers"}</span>
-                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-2"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleTrackBus(bus);
+                      }}
+                    >
+                      <Navigation className="h-3 w-3 mr-1" />
+                      {isKannada ? "ಟ್ರ್ಯಾಕ್ ಬಸ್" : "Track Bus"}
+                    </Button>
                   </div>
                   <div className="ml-auto">
                     <span className={`px-2 py-1 rounded-full text-xs ${

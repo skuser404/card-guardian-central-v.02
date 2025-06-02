@@ -18,22 +18,36 @@ const EmergencyButton: React.FC<EmergencyButtonProps> = ({
   department
 }) => {
   const handleEmergencyCall = () => {
+    // Emergency contact numbers
+    const emergencyNumbers = {
+      police: '100',
+      fire: '101',
+      ambulance: '108',
+      helpline: '1800-425-4709'
+    };
+    
     // Format employee info for the emergency notification
     const employeeInfo = employeeName 
       ? `${isKannada ? "ಉದ್ಯೋಗಿ: " : "Employee: "} ${employeeName}${employeeId ? ` (${employeeId})` : ''}${department ? `, ${department}` : ''}`
       : '';
     
-    // Show toast notification
+    // Show toast notification with emergency numbers
     toast({
       title: isKannada ? "ತುರ್ತು ಕರೆ ಮಾಡಲಾಗುತ್ತಿದೆ" : "Emergency Call Initiated",
       description: isKannada 
-        ? `ತುರ್ತು ಸೇವೆಗಳು ಶೀಘ್ರದಲ್ಲೇ ನಿಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸುತ್ತವೆ${employeeInfo ? ` - ${employeeInfo}` : ''}`
-        : `Emergency services will contact you shortly${employeeInfo ? ` - ${employeeInfo}` : ''}`,
+        ? `ತುರ್ತು ಸಂಪರ್ಕ ಸಂಖ್ಯೆಗಳು: ಪೊಲೀಸ್: 100, ಅಗ್ನಿಶಾಮಕ: 101, ಆಂಬುಲೆನ್ಸ್: 108, ಹೆಲ್ಪ್‌ಲೈನ್: 1800-425-4709${employeeInfo ? ` - ${employeeInfo}` : ''}`
+        : `Emergency contacts: Police: 100, Fire: 101, Ambulance: 108, Helpline: 1800-425-4709${employeeInfo ? ` - ${employeeInfo}` : ''}`,
       variant: "destructive",
+      duration: 10000,
     });
     
     // In a real application, this would initiate an actual emergency call
-    console.log("Emergency call initiated", { employeeName, employeeId, department });
+    console.log("Emergency call initiated", { 
+      emergencyNumbers, 
+      employeeName, 
+      employeeId, 
+      department 
+    });
   };
 
   return (

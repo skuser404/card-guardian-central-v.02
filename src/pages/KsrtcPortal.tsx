@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import KsrtcBusTracker from "@/components/KsrtcBusTracker";
 import BusMapTracker from "@/components/BusMapTracker";
 import EmergencyButton from "@/components/EmergencyButton";
+import StudentPassInfo from "@/components/StudentPassInfo";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, Map, Phone } from "lucide-react";
+import { AlertTriangle, Map, Phone, GraduationCap } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const KsrtcPortal = () => {
@@ -45,12 +46,15 @@ const KsrtcPortal = () => {
           </div>
           
           <Tabs defaultValue="list" className="mb-6">
-            <TabsList className="grid grid-cols-2 mb-4">
+            <TabsList className="grid grid-cols-3 mb-4">
               <TabsTrigger value="list">
                 {isKannada ? "ಬಸ್ ಪಟ್ಟಿ" : "Bus List"}
               </TabsTrigger>
               <TabsTrigger value="map">
                 {isKannada ? "ನಕ್ಷೆ ಟ್ರ್ಯಾಕಿಂಗ್" : "Map Tracking"}
+              </TabsTrigger>
+              <TabsTrigger value="student-pass">
+                {isKannada ? "ವಿದ್ಯಾರ್ಥಿ ಪಾಸ್" : "Student Pass"}
               </TabsTrigger>
             </TabsList>
             
@@ -138,6 +142,22 @@ const KsrtcPortal = () => {
                     </CardContent>
                   </Card>
                 </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="student-pass">
+              <div className="grid grid-cols-1 gap-6">
+                <Card className="bg-white border">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg font-medium text-karnataka-red flex items-center">
+                      <GraduationCap className="h-5 w-5 mr-2 text-karnataka-blue" />
+                      {isKannada ? "ವಿದ್ಯಾರ್ಥಿ ಬಸ್ ಪಾಸ್" : "Student Bus Pass"}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <StudentPassInfo isKannada={isKannada} />
+                  </CardContent>
+                </Card>
               </div>
             </TabsContent>
           </Tabs>

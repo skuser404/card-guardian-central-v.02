@@ -1,266 +1,99 @@
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue 
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-
-const initialLiveServices = [
-  {
-    id: 1,
-    name: "BMTC",
-    nameKn: "ಬಿಎಂಟಿಸಿ",
-    status: "Normal",
-    statusKn: "ಸಾಮಾನ್ಯ",
-    details: "All routes operating normally",
-    detailsKn: "ಎಲ್ಲಾ ಮಾರ್ಗಗಳು ಸಾಮಾನ್ಯವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿವೆ",
-    plateNumber: "KA-01-F-1234",
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-karnataka-blue">
-        <path d="M19 17h2V7l-2 2"/>
-        <path d="M15 17h2"/>
-        <path d="M2 17h2V7H2z"/>
-        <path d="M6 12v3c0 1.1.9 2 2 2h3"/>
-        <path d="M18 17v-3"/>
-        <rect x="4" y="17" width="16" height="2"/>
-        <path d="M10 7v5a1 1 0 001 1h2"/>
-      </svg>
-    ),
-    color: "blue",
-    link: "/bmtc"
-  },
-  {
-    id: 2,
-    name: "Metro",
-    nameKn: "ಮೆಟ್ರೋ",
-    status: "Minor Delay",
-    statusKn: "ಸಣ್ಣ ವಿಳಂಬ",
-    details: "Purple Line: 10 min delay",
-    detailsKn: "ನೇರಳೆ ಮಾರ್ಗ: 10 ನಿಮಿಷ ವಿಳಂಬ",
-    plateNumber: "M-101",
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-karnataka-yellow">
-        <rect x="4" y="3" width="16" height="16" rx="2"/>
-        <path d="M4 11h16"/>
-        <path d="M12 3v16"/>
-      </svg>
-    ),
-    color: "yellow",
-    link: "/metro"
-  },
-  {
-    id: 3,
-    name: "KSRTC",
-    nameKn: "ಕೆಎಸ್ಆರ್‌ಟಿಸಿ",
-    status: "Normal",
-    statusKn: "ಸಾಮಾನ್ಯ",
-    details: "All routes on schedule",
-    detailsKn: "ಎಲ್ಲಾ ಮಾರ್ಗಗಳು ವೇಳಾಪಟ್ಟಿಯಂತೆ",
-    plateNumber: "KA-08-F-5678",
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-karnataka-red">
-        <path d="M3 9h18V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v4z"/>
-        <path d="M3 9v5c0 1 1 2 2 2h14c1 0 2-1 2-2V9"/>
-        <path d="M3 9H1"/>
-        <path d="M23 9h-2"/>
-        <path d="M8 17v3"/>
-        <path d="M16 17v3"/>
-      </svg>
-    ),
-    color: "red",
-    link: "/ksrtc"
-  },
-  {
-    id: 4,
-    name: "Auto/Taxi",
-    nameKn: "ಆಟೋ/ಟ್ಯಾಕ್ಸಿ",
-    status: "Normal",
-    statusKn: "ಸಾಮಾನ್ಯ",
-    details: "Average wait time: 5 mins",
-    detailsKn: "ಸರಾಸರಿ ನಿರೀಕ್ಷೆ ಸಮಯ: 5 ನಿಮಿಷಗಳು",
-    plateNumber: "KA-05-AB-4321",
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-karnataka-green">
-        <path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/>
-        <path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/>
-        <path d="M5 17h-2v-11a1 1 0 0 1 1 -1h9v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5"/>
-      </svg>
-    ),
-    color: "green",
-    link: "/auto-taxi"
-  }
-];
-
-const routes = {
-  "BMTC": ["Majestic to Whitefield", "KR Market to HSR Layout", "Shivajinagar to Electronic City", "Banashankari to ITPL"],
-  "Metro": ["Purple Line", "Green Line", "Yellow Line (Under Construction)", "Pink Line (Under Construction)"],
-  "KSRTC": ["Bangalore to Mysore", "Bangalore to Mangalore", "Bangalore to Hubli", "Bangalore to Belgaum"],
-  "Auto/Taxi": ["City Rides", "Airport Transfers", "Outstation Trips", "Package Tours"]
-};
-
-const routesKannada = {
-  "BMTC": ["ಮೆಜೆಸ್ಟಿಕ್‌ನಿಂದ ವೈಟ್‌ಫೀಲ್ಡ್", "ಕೆ.ಆರ್. ಮಾರ್ಕೆಟ್‌ನಿಂದ ಎಚ್‌ಎಸ್‌ಆರ್ ಲೇಔಟ್", "ಶಿವಾಜಿನಗರದಿಂದ ಎಲೆಕ್ಟ್ರಾನಿಕ್ ಸಿಟಿ", "ಬನಶಂಕರಿಯಿಂದ ಐಟಿಪಿಎಲ್"],
-  "Metro": ["ನೇರಳೆ ಮಾರ್ಗ", "ಹಸಿರು ಮಾರ್ಗ", "ಹಳದಿ ಮಾರ್ಗ (ನಿರ್ಮಾಣದಲ್ಲಿ)", "ಗುಲಾಬಿ ಮಾರ್ಗ (ನಿರ್ಮಾಣದಲ್ಲಿ)"],
-  "KSRTC": ["ಬೆಂಗಳೂರಿನಿಂದ ಮೈಸೂರು", "ಬೆಂಗಳೂರಿನಿಂದ ಮಂಗಳೂರು", "ಬೆಂಗಳೂರಿನಿಂದ ಹುಬ್ಬಳ್ಳಿ", "ಬೆಂಗಳೂರಿನಿಂದ ಬೆಳಗಾವಿ"],
-  "Auto/Taxi": ["ನಗರದ ಪ್ರಯಾಣಗಳು", "ವಿಮಾನ ನಿಲ್ದಾಣ ವರ್ಗಾವಣೆಗಳು", "ಹೊರಗಿನ ಪ್ರಯಾಣಗಳು", "ಪ್ಯಾಕೇಜ್ ಪ್ರವಾಸಗಳು"]
-};
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertCircle, CheckCircle, Clock, Wifi } from 'lucide-react';
 
 interface LiveStatusProps {
   isKannada?: boolean;
 }
 
-const LiveStatus = ({ isKannada = false }: LiveStatusProps) => {
-  const navigate = useNavigate();
-  const [liveServices, setLiveServices] = useState(initialLiveServices);
-  const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
-  const [selectedService, setSelectedService] = useState<string | null>(null);
-  
-  const refreshStatus = () => {
-    // Simulate updating status with random values
-    const statuses = ["Normal", "Minor Delay", "Major Delay"];
-    const statusesKn = ["ಸಾಮಾನ್ಯ", "ಸಣ್ಣ ವಿಳಂಬ", "ಪ್ರಮುಖ ವಿಳಂಬ"];
-    
-    const updatedServices = liveServices.map(service => {
-      const randomIndex = Math.floor(Math.random() * 3); 
-      const newStatus = statuses[randomIndex];
-      const newStatusKn = statusesKn[randomIndex];
-      
-      let details = "";
-      let detailsKn = "";
-      
-      if (newStatus === "Normal") {
-        details = "All routes operating normally";
-        detailsKn = "ಎಲ್ಲಾ ಮಾರ್ಗಗಳು ಸಾಮಾನ್ಯವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿವೆ";
-      } else if (newStatus === "Minor Delay") {
-        details = `${service.name} experiencing 10-15 min delays`;
-        detailsKn = `${service.nameKn} 10-15 ನಿಮಿಷಗಳ ವಿಳಂಬ ಅನುಭವಿಸುತ್ತಿದೆ`;
-      } else {
-        details = `${service.name} experiencing 30+ min delays`;
-        detailsKn = `${service.nameKn} 30+ ನಿಮಿಷಗಳ ವಿಳಂಬ ಅನುಭವಿಸುತ್ತಿದೆ`;
-      }
-      
-      return {
-        ...service,
-        status: newStatus,
-        statusKn: newStatusKn,
-        details,
-        detailsKn
-      };
-    });
-    
-    setLiveServices(updatedServices);
-  };
-  
-  const handleServiceClick = (service: any) => {
-    // Navigate to the service portal page
-    navigate(service.link);
-  };
-  
-  const getRouteOptions = (serviceName: string) => {
-    if (isKannada) {
-      return routesKannada[serviceName as keyof typeof routesKannada] || [];
+const LiveStatus: React.FC<LiveStatusProps> = ({ isKannada = false }) => {
+  const services = [
+    {
+      id: 1,
+      name: isKannada ? 'ಬಿಎಂಟಿಸಿ ಬಸ್ಸುಗಳು' : 'BMTC Buses',
+      status: 'operational',
+      icon: CheckCircle,
+      color: 'text-karnataka-green',
+      bgColor: 'bg-karnataka-green/10',
+      borderColor: 'border-karnataka-green/30'
+    },
+    {
+      id: 2,
+      name: isKannada ? 'ನಮ್ಮ ಮೆಟ್ರೋ' : 'Namma Metro',
+      status: 'operational',
+      icon: CheckCircle,
+      color: 'text-karnataka-green',
+      bgColor: 'bg-karnataka-green/10',
+      borderColor: 'border-karnataka-green/30'
+    },
+    {
+      id: 3,
+      name: isKannada ? 'ಕೆಎಸ್ಆರ್‌ಟಿಸಿ ಬಸ್ಸುಗಳು' : 'KSRTC Buses',
+      status: 'delayed',
+      icon: Clock,
+      color: 'text-karnataka-yellow',
+      bgColor: 'bg-karnataka-yellow/10',
+      borderColor: 'border-karnataka-yellow/30'
+    },
+    {
+      id: 4,
+      name: isKannada ? 'ಆಟೋ/ಟ್ಯಾಕ್ಸಿ ಸೇವೆಗಳು' : 'Auto/Taxi Services',
+      status: 'maintenance',
+      icon: AlertCircle,
+      color: 'text-karnataka-red',
+      bgColor: 'bg-karnataka-red/10',
+      borderColor: 'border-karnataka-red/30'
     }
-    return routes[serviceName as keyof typeof routes] || [];
+  ];
+
+  const getStatusText = (status: string) => {
+    if (isKannada) {
+      switch (status) {
+        case 'operational': return 'ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿದೆ';
+        case 'delayed': return 'ವಿಳಂಬ';
+        case 'maintenance': return 'ನಿರ್ವಹಣೆ';
+        default: return 'ಅಜ್ಞಾತ';
+      }
+    } else {
+      switch (status) {
+        case 'operational': return 'Operational';
+        case 'delayed': return 'Delayed';
+        case 'maintenance': return 'Maintenance';
+        default: return 'Unknown';
+      }
+    }
   };
-  
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-karnataka-blue">
-          {isKannada ? "ಸೇವೆ ಮಾಹಿತಿಗಳು" : "Service Updates"}
-        </h3>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={refreshStatus}
-          className="text-xs hover:bg-karnataka-blue/10"
-        >
-          {isKannada ? "ಸ್ಥಿತಿ ರಿಫ್ರೆಶ್ ಮಾಡಿ" : "Refresh Status"}
-        </Button>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {liveServices.map((service) => (
-          <div 
-            key={service.id}
-            className="glassmorphism rounded-lg p-4 hover:bg-white/30 transition-colors cursor-pointer"
-            onClick={() => handleServiceClick(service)}
-          >
-            <div className="flex items-center gap-3">
-              <div className={cn(
-                "w-10 h-10 rounded-full flex items-center justify-center",
-                service.color === "blue" && "bg-karnataka-blue/10",
-                service.color === "yellow" && "bg-karnataka-yellow/10",
-                service.color === "red" && "bg-karnataka-red/10",
-                service.color === "green" && "bg-karnataka-green/10"
-              )}>
-                {service.icon}
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <p className="font-medium">
-                    {isKannada ? service.nameKn : service.name}
-                  </p>
-                  <div className={cn(
-                    "px-2 py-1 rounded-full text-xs flex items-center",
-                    service.status === "Normal" && "bg-green-100 text-green-800",
-                    service.status === "Minor Delay" && "bg-yellow-100 text-yellow-800",
-                    service.status === "Major Delay" && "bg-red-100 text-red-800"
-                  )}>
-                    {/* Enhanced status indicator with larger dot */}
-                    <span className={cn(
-                      "inline-block w-3 h-3 rounded-full mr-1",
-                      service.status === "Normal" && "bg-green-500",
-                      service.status === "Minor Delay" && "bg-yellow-500",
-                      service.status === "Major Delay" && "bg-red-500"
-                    )}></span>
-                    {isKannada ? service.statusKn : service.status}
+    <div>
+      <h2 className="text-2xl font-semibold text-karnataka-blue mb-4">
+        {isKannada ? 'ಸೇವಾ ನವೀಕರಣಗಳು' : 'Service Updates'}
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {services.map((service) => {
+          const IconComponent = service.icon;
+          return (
+            <Card key={service.id} className={`bg-white border-2 ${service.borderColor} shadow-lg hover:shadow-xl transition-shadow duration-300`}>
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center justify-between text-lg">
+                  <span className="flex items-center text-karnataka-blue">
+                    <Wifi className="mr-2 h-4 w-4" />
+                    {service.name}
+                  </span>
+                  <div className={`p-2 rounded-full ${service.bgColor}`}>
+                    <IconComponent className={`h-4 w-4 ${service.color}`} />
                   </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-2">
+                <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${service.bgColor} ${service.color} border ${service.borderColor}`}>
+                  {getStatusText(service.status)}
                 </div>
-                <p className="text-xs text-gray-500">
-                  {isKannada ? service.detailsKn : service.details}
-                </p>
-                <p className="text-xs font-medium mt-1">
-                  {isKannada ? "ವಾಹನ ಸಂಖ್ಯೆ: " : "Bus No: "} 
-                  <span className="text-karnataka-blue">{service.plateNumber}</span>
-                </p>
-              </div>
-            </div>
-            
-            {selectedService === service.name && (
-              <div className="mt-3 pt-3 border-t border-gray-200">
-                <Select onValueChange={setSelectedRoute}>
-                  <SelectTrigger className="w-full text-sm">
-                    <SelectValue placeholder={isKannada ? "ಮಾರ್ಗವನ್ನು ಆಯ್ಕೆಮಾಡಿ" : "Select a route"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getRouteOptions(service.name).map((route) => (
-                      <SelectItem key={route} value={route}>{route}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                
-                {selectedRoute && (
-                  <div className="mt-2 p-2 bg-gray-50 rounded-md text-xs">
-                    <p className="font-medium">
-                      {isKannada ? "ಮಾರ್ಗ: " : "Route: "}{selectedRoute}
-                    </p>
-                    <div className="flex justify-between items-center mt-1">
-                      <span>{isKannada ? "ಮುಂದಿನ ನಿರ್ಗಮನ:" : "Next departure:"}</span>
-                      <span className="font-medium">{Math.floor(Math.random() * 15) + 1} {isKannada ? "ನಿಮಿಷಗಳು" : "mins"}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );

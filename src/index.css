@@ -94,10 +94,6 @@
   }
 }
 
-.glassmorphism {
-  @apply bg-white/20 backdrop-blur-md border border-white/30 shadow-lg;
-}
-
 .card-gradient {
   background: linear-gradient(135deg, rgba(12, 62, 141, 0.7), rgba(77, 157, 224, 0.7));
 }

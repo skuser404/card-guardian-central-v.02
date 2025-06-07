@@ -53,9 +53,9 @@ const Header = ({ isKannada: propIsKannada, onLanguageChange, showLogout = false
   };
 
   return (
-    <header className="w-full glassmorphism p-4 flex items-center justify-between mb-6 rounded-lg">
+    <header className="w-full bg-white border-2 border-karnataka-blue p-4 flex items-center justify-between mb-6 rounded-lg shadow-md">
       <div className="flex items-center gap-2">
-        <div className="h-12 w-12 rounded-full flex items-center justify-center overflow-hidden">
+        <div className="h-12 w-12 rounded-full flex items-center justify-center overflow-hidden bg-karnataka-blue/10">
           <img 
             src="/lovable-uploads/b7b0f34d-bb56-4f0e-8a16-e71b81a19fef.png" 
             alt={isKannada ? "ಕೆಎಸ್ಆರ್ಟಿಸಿ ಲೋಗೋ" : "KSRTC Logo"} 
@@ -100,7 +100,7 @@ const Header = ({ isKannada: propIsKannada, onLanguageChange, showLogout = false
           <Button 
             variant="outline" 
             onClick={handleLogout}
-            className="flex items-center gap-1 border-karnataka-red text-karnataka-red hover:bg-karnataka-red/10"
+            className="flex items-center gap-1 border-karnataka-red text-karnataka-red hover:bg-karnataka-red hover:text-white"
           >
             <LogOut className="h-4 w-4" />
             <span>{isKannada ? "ಲಾಗ್ ಔಟ್" : "Logout"}</span>

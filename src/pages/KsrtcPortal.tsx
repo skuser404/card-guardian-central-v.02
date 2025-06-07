@@ -26,7 +26,7 @@ const KsrtcPortal = () => {
   };
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen bg-gradient-to-br from-karnataka-lightBlue/20 to-karnataka-yellow/20">
       <div className="container max-w-4xl mx-auto px-4 py-6">
         <Header isKannada={isKannada} onLanguageChange={handleLanguageChange} />
         
@@ -36,7 +36,7 @@ const KsrtcPortal = () => {
               variant="ghost" 
               size="sm" 
               onClick={() => navigate("/")}
-              className="hover:bg-karnataka-blue/10"
+              className="hover:bg-karnataka-blue/10 text-karnataka-blue"
             >
               &larr; {isKannada ? "ಹಿಂದೆ" : "Back"}
             </Button>
@@ -46,14 +46,14 @@ const KsrtcPortal = () => {
           </div>
           
           <Tabs defaultValue="list" className="mb-6">
-            <TabsList className="grid grid-cols-3 mb-4">
-              <TabsTrigger value="list">
+            <TabsList className="grid grid-cols-3 mb-4 bg-white border border-karnataka-blue">
+              <TabsTrigger value="list" className="data-[state=active]:bg-karnataka-blue data-[state=active]:text-white">
                 {isKannada ? "ಬಸ್ ಪಟ್ಟಿ" : "Bus List"}
               </TabsTrigger>
-              <TabsTrigger value="map">
+              <TabsTrigger value="map" className="data-[state=active]:bg-karnataka-blue data-[state=active]:text-white">
                 {isKannada ? "ನಕ್ಷೆ ಟ್ರ್ಯಾಕಿಂಗ್" : "Map Tracking"}
               </TabsTrigger>
-              <TabsTrigger value="student-pass">
+              <TabsTrigger value="student-pass" className="data-[state=active]:bg-karnataka-blue data-[state=active]:text-white">
                 {isKannada ? "ವಿದ್ಯಾರ್ಥಿ ಪಾಸ್" : "Student Pass"}
               </TabsTrigger>
             </TabsList>
@@ -67,15 +67,15 @@ const KsrtcPortal = () => {
               </div>
               
               <div className="space-y-6">
-                <Card className="bg-white border border-red-200">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-medium text-karnataka-red flex items-center">
-                      <AlertTriangle className="h-5 w-5 mr-2 text-red-500" />
+                <Card className="bg-white border-2 border-karnataka-red shadow-md">
+                  <CardHeader className="pb-2 bg-karnataka-red text-white">
+                    <CardTitle className="text-lg font-medium flex items-center">
+                      <AlertTriangle className="h-5 w-5 mr-2" />
                       {isKannada ? "ತುರ್ತು ಸಹಾಯ" : "Emergency Assistance"}
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-sm mb-4">
+                  <CardContent className="p-4">
+                    <p className="text-sm mb-4 text-karnataka-gray">
                       {isKannada 
                         ? "ತುರ್ತು ಸಂದರ್ಭದಲ್ಲಿ, ಈ ಕೆಳಗಿನ ಬಟನ್ ಅನ್ನು ಒತ್ತಿ"
                         : "In case of emergency, press the button below"}
@@ -86,18 +86,18 @@ const KsrtcPortal = () => {
                   </CardContent>
                 </Card>
                 
-                <div className="bg-white border rounded-lg p-4">
+                <div className="bg-white border-2 border-karnataka-blue rounded-lg p-4 shadow-md">
                   <h3 className="text-lg font-medium mb-2 text-karnataka-red">
                     {isKannada ? "ಸಂಪರ್ಕ ಮಾಹಿತಿ" : "Contact Information"}
                   </h3>
                   <div className="space-y-2">
                     <p className="flex items-center">
-                      <span className="font-medium mr-2">{isKannada ? "ಹೆಲ್ಪ್‌ಲೈನ್:" : "Helpline:"}</span>
-                      <a href="tel:18004254709" className="text-karnataka-blue">1800-425-4709</a>
+                      <span className="font-medium mr-2 text-karnataka-blue">{isKannada ? "ಹೆಲ್ಪ್‌ಲೈನ್:" : "Helpline:"}</span>
+                      <a href="tel:18004254709" className="text-karnataka-red">1800-425-4709</a>
                     </p>
                     <p className="flex items-center">
-                      <span className="font-medium mr-2">{isKannada ? "ಇಮೇಲ್:" : "Email:"}</span>
-                      <a href="mailto:helpline@ksrtc.org" className="text-karnataka-blue">helpline@ksrtc.org</a>
+                      <span className="font-medium mr-2 text-karnataka-blue">{isKannada ? "ಇಮೇಲ್:" : "Email:"}</span>
+                      <a href="mailto:helpline@ksrtc.org" className="text-karnataka-red">helpline@ksrtc.org</a>
                     </p>
                   </div>
                 </div>

@@ -74,7 +74,7 @@ const LiveStatus: React.FC<LiveStatusProps> = ({ isKannada = false }) => {
         {services.map((service) => {
           const IconComponent = service.icon;
           return (
-            <Card key={service.id} className={`bg-white border-2 ${service.borderColor} shadow-lg hover:shadow-xl transition-shadow duration-300`}>
+            <Card key={service.id} className={`bg-white border ${service.borderColor}`}>
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center justify-between text-lg">
                   <span className="flex items-center text-karnataka-blue">
